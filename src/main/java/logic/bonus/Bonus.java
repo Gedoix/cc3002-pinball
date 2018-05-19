@@ -19,7 +19,8 @@ public interface Bonus {
     int timesTriggered();
 
     /**
-     * Trigger the specific action the bonus does and applies it to the {@link Game} object.
+     * Trigger general bonus behaviour for the object, and the specific action the bonus does
+     * and applies it to the {@link Game} object.
      *
      * @param game the game controller object
      */
