@@ -2,10 +2,6 @@ package logic.utils;
 
 import controller.Game;
 import logic.gameelements.Hittable;
-import logic.gameelements.bumper.KickerBumper;
-import logic.gameelements.bumper.PopBumper;
-import logic.gameelements.target.DropTarget;
-import logic.gameelements.target.SpotTarget;
 
 /**
  * Interface for implementing the visitor pattern.

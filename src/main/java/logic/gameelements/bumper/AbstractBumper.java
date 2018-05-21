@@ -1,7 +1,6 @@
 package logic.gameelements.bumper;
 
 import logic.gameelements.AbstractHittable;
-import logic.utils.Visitor;
 
 /**
  * Abstract class implementing basic bumper behaviour.

@@ -1,11 +1,6 @@
 package logic.gameelements;
 
 import controller.Game;
-import logic.gameelements.bumper.KickerBumper;
-import logic.gameelements.bumper.PopBumper;
-import logic.gameelements.target.DropTarget;
-import logic.gameelements.target.SpotTarget;
-import logic.utils.Visitable;
 import logic.utils.Visitor;
 
 import java.util.Random;

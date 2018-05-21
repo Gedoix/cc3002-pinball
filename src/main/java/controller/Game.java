@@ -1,6 +1,5 @@
 package controller;
 
-import javafx.scene.control.Tab;
 import logic.bonus.DropTargetBonus;
 import logic.bonus.ExtraBallBonus;
 import logic.bonus.JackPotBonus;
@@ -8,7 +7,6 @@ import logic.gameelements.HitVisitor;
 import logic.gameelements.Hittable;
 import logic.table.DefaultTable;
 import logic.table.Table;
-import logic.utils.Visitor;
 
 import java.util.ArrayList;
 import java.util.List;
