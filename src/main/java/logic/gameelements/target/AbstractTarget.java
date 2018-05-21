@@ -36,7 +36,7 @@ public abstract class AbstractTarget extends AbstractHittable implements Target 
      * {@inheritDoc}
      */
     @Override
-    protected void hittableBehaviour() {}
+    abstract protected void hittableBehaviour();
 
     /**
      * {@inheritDoc}

@@ -1,6 +1,7 @@
 package logic.gameelements.bumper;
 
 import logic.gameelements.AbstractHittable;
+import logic.utils.Visitor;
 
 /**
  * Abstract class implementing basic bumper behaviour.
@@ -80,6 +81,7 @@ public abstract class AbstractBumper extends AbstractHittable implements Bumper{
     protected void hittableBehaviour() {
         if (hits_left_to_upgrade != 0) {
             if (hits_left_to_upgrade == 1) {
+                this.visitor.updateGameForBumper();
                 this.upgrade();
             }
             hits_left_to_upgrade--;
@@ -127,4 +129,5 @@ public abstract class AbstractBumper extends AbstractHittable implements Bumper{
         this.setScoreGiven(this.not_upgraded_score_given);
         this.hits_left_to_upgrade = this.total_hits_to_upgrade;
     }
+
 }

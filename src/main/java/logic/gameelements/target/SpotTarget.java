@@ -17,4 +17,12 @@ public class SpotTarget extends AbstractTarget {
     protected SpotTarget(boolean active) {
         super(0, active);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void hittableBehaviour() {
+        this.visitor.updateGameForSpotTarget();
+    }
 }

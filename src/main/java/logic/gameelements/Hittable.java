@@ -1,5 +1,7 @@
 package logic.gameelements;
 
+import logic.utils.Visitable;
+
 /**
  * Interface that represents a hittable object.
  *
@@ -10,7 +12,7 @@ package logic.gameelements;
  * @see logic.gameelements.bumper.Bumper
  * @see logic.gameelements.target.Target
  */
-public interface Hittable {
+public interface Hittable extends Visitable {
     /**
      * Defines that an object have been hit.
      * Implementations should consider the events that a hit to an object can trigger.

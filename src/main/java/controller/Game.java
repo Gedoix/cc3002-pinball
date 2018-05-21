@@ -4,8 +4,11 @@ import javafx.scene.control.Tab;
 import logic.bonus.DropTargetBonus;
 import logic.bonus.ExtraBallBonus;
 import logic.bonus.JackPotBonus;
+import logic.gameelements.HitVisitor;
+import logic.gameelements.Hittable;
 import logic.table.DefaultTable;
 import logic.table.Table;
+import logic.utils.Visitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +37,13 @@ public class Game {
         extra_ball_bonus = new ExtraBallBonus();
         jack_pot_bonus = new JackPotBonus();
         drop_target_bonus = new DropTargetBonus();
+    }
+
+    public void hit(Hittable hittable) {
+        HitVisitor visitor = new HitVisitor(this);
+        hittable.accept(visitor);
+        int result = visitor.getResult();
+        this.addPoints(result);
     }
 
     public void addBall() {
@@ -146,6 +156,18 @@ public class Game {
 
     public DropTargetBonus getDropTargetBonus() {
         return drop_target_bonus;
+    }
+
+    public void triggerExtraBallBonus() {
+        this.extra_ball_bonus.trigger(this);
+    }
+
+    public void triggerJackPotBonus() {
+        this.jack_pot_bonus.trigger(this);
+    }
+
+    public void triggerDropTargetBonus() {
+        this.drop_target_bonus.trigger(this);
     }
 
     public class DuplicateNameException extends Exception {

@@ -17,4 +17,12 @@ public class DropTarget extends AbstractTarget {
     protected DropTarget(boolean active) {
         super(100, active);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void hittableBehaviour() {
+        this.visitor.updateGameForDropTarget();
+    }
 }

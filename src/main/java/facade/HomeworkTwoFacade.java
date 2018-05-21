@@ -67,7 +67,8 @@ public class HomeworkTwoFacade {
      */
     public Table newPlayableTableWithNoTargets(String name, int numberOfBumpers, double prob) {
         try {
-            game.addDefaultTable("newPlayableTableWithNoTargets", 10, 10, 0, 0);
+            game.addDefaultTable(name, 10, 10, 0, 0);
+            game.setCurrentTableToLastAdded();
         } catch (Game.DuplicateNameException ignored) {}
         return game.getLastAddedTable();
     }
