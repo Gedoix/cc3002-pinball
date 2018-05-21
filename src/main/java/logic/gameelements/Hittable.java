@@ -6,6 +6,7 @@ package logic.gameelements;
  * <p>Objects that are game elements should implement this interface.</p>
  *
  * @author Juan-Pablo Silva
+ * @see AbstractHittable
  * @see logic.gameelements.bumper.Bumper
  * @see logic.gameelements.target.Target
  */

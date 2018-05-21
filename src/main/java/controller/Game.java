@@ -24,4 +24,12 @@ public class Game {
     public void upgradeAllBumpers() {
         table.upgradeAllBumpers();
     }
+
+    public int getScore() {
+        return score;
+    }
+
+    public int getBall_counter() {
+        return ball_counter;
+    }
 }
