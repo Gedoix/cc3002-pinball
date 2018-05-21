@@ -14,7 +14,7 @@ public abstract class AbstractHittable implements Hittable{
     /**
      * Default score to be given to the player when {@link #hit()} is called.
      */
-    private int default_score_given;
+    private int current_score_given;
 
     /**
      * Accumulative total score that has given to the player since the {@link controller.Game}'s start.
@@ -27,7 +27,7 @@ public abstract class AbstractHittable implements Hittable{
      * @param default_score_given   The score to be out-putted by {@link #hit()}.
      */
     protected AbstractHittable(int default_score_given) {
-        this.default_score_given = default_score_given;
+        this.current_score_given = default_score_given;
         this.total_score = 0;
     }
 
@@ -42,8 +42,8 @@ public abstract class AbstractHittable implements Hittable{
     @Override
     public int hit() {
         this.hittableBehaviour();
-        this.total_score += this.default_score_given;
-        return this.default_score_given;
+        this.total_score += this.current_score_given;
+        return this.current_score_given;
     }
 
     /**
@@ -52,7 +52,7 @@ public abstract class AbstractHittable implements Hittable{
      * @return Score out-putted by {@link #hit()}.
      */
     protected int getScoreGiven() {
-        return this.default_score_given;
+        return this.current_score_given;
     }
 
     /**
@@ -61,7 +61,7 @@ public abstract class AbstractHittable implements Hittable{
      * @param default_score_given   The new score to be out-putted by {@link #hit()}.
      */
     protected void setScoreGiven(int default_score_given) {
-        this.default_score_given = default_score_given;
+        this.current_score_given = default_score_given;
     }
 
     /**

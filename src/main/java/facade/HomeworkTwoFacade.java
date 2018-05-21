@@ -19,7 +19,7 @@ public class HomeworkTwoFacade {
      *
      * @see Game
      */
-    private Game game;
+    private Game game = new Game();
 
     /**
      * Gets whether the current table is playable or not.
@@ -27,7 +27,7 @@ public class HomeworkTwoFacade {
      * @return true if the current table is playable, false otherwise
      */
     public boolean isPlayableTable() {
-        return false;
+        return game.isPlayableCurrentTable();
     }
 
     /**
@@ -36,7 +36,7 @@ public class HomeworkTwoFacade {
      * @return the DropTargetBonus instance
      */
     public Bonus getDropTargetBonus() {
-        return null;
+        return game.getDropTargetBonus();
     }
 
     /**
@@ -45,7 +45,7 @@ public class HomeworkTwoFacade {
      * @return the ExtraBallBonus instance
      */
     public Bonus getExtraBallBonus() {
-        return null;
+        return game.getExtraBallBonus();
     }
 
     /**
@@ -54,7 +54,7 @@ public class HomeworkTwoFacade {
      * @return the JackPotBonus instance
      */
     public Bonus getJackPotBonus() {
-        return null;
+        return game.getJackPotBonus();
     }
 
     /**
@@ -66,7 +66,10 @@ public class HomeworkTwoFacade {
      * @return a new table determined by the parameters
      */
     public Table newPlayableTableWithNoTargets(String name, int numberOfBumpers, double prob) {
-        return null;
+        try {
+            game.addDefaultTable("newPlayableTableWithNoTargets", 10, 10, 0, 0);
+        } catch (Game.DuplicateNameException ignored) {}
+        return game.getLastAddedTable();
     }
 
     /**
