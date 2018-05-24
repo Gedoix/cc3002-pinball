@@ -1,5 +1,8 @@
 package logic.gameelements.bumper;
 
+import controller.Game;
+import logic.utils.GameElementVisitor;
+
 /**
  * Bumper type class for use in {@link controller.Game}.
  *
@@ -27,5 +30,10 @@ public class KickerBumper extends AbstractBumper {
      */
     protected KickerBumper(boolean upgraded) {
         super(500, 1000, 5, upgraded);
+    }
+
+    @Override
+    public void accept(GameElementVisitor visitor, Game game) {
+        visitor.visitingKickerBumper(this, game);
     }
 }

@@ -1,5 +1,8 @@
 package logic.gameelements.bumper;
 
+import controller.Game;
+import logic.utils.GameElementVisitor;
+
 /**
  * Bumper type class for use in {@link controller.Game}.
  *
@@ -27,5 +30,10 @@ public class PopBumper extends AbstractBumper {
      */
     protected PopBumper(boolean upgraded) {
         super(100, 300, 3, upgraded);
+    }
+
+    @Override
+    public void accept(GameElementVisitor visitor, Game game) {
+        visitor.visitingPopBumper(this, game);
     }
 }

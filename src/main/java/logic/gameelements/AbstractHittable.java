@@ -1,6 +1,7 @@
 package logic.gameelements;
 
-import logic.utils.Visitor;
+import controller.Game;
+import logic.utils.GameElementVisitor;
 
 /**
  * Abstract class implementing basic hittable behaviour.
@@ -17,8 +18,6 @@ public abstract class AbstractHittable implements Hittable{
      * Default score to be given to the player when {@link #hit()} is called.
      */
     private int current_score_given;
-
-    protected Visitor visitor;
 
     /**
      * Accumulative total score that has given to the player since the {@link controller.Game}'s start.
@@ -84,9 +83,4 @@ public abstract class AbstractHittable implements Hittable{
      */
     abstract protected void hittableBehaviour();
 
-    @Override
-    public void accept(Visitor visitor) {
-        this.visitor = visitor;
-        this.visitor.visit(this);
-    }
 }

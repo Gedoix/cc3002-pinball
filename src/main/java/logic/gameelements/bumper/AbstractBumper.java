@@ -1,6 +1,8 @@
 package logic.gameelements.bumper;
 
+import controller.Game;
 import logic.gameelements.AbstractHittable;
+import logic.utils.GameElementVisitor;
 
 /**
  * Abstract class implementing basic bumper behaviour.
@@ -39,13 +41,13 @@ public abstract class AbstractBumper extends AbstractHittable implements Bumper{
     /**
      * Score out-putted on {@link #hit()} when not upgraded.
      *
-     * @see #default_score_given
+     * @see #current_score_given
      */
     private final int not_upgraded_score_given;
     /**
      * Score out-putted on {@link #hit()} when upgraded.
      *
-     * @see #default_score_given
+     * @see #current_score_given
      */
     private final int upgraded_score_given;
 
@@ -80,7 +82,6 @@ public abstract class AbstractBumper extends AbstractHittable implements Bumper{
     protected void hittableBehaviour() {
         if (hits_left_to_upgrade != 0) {
             if (hits_left_to_upgrade == 1) {
-                this.visitor.updateGameForBumper();
                 this.upgrade();
             }
             hits_left_to_upgrade--;

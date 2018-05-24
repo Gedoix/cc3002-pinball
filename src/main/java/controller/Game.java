@@ -38,9 +38,11 @@ public class Game {
     }
 
     public void hit(Hittable hittable) {
-        HitVisitor visitor = new HitVisitor(this);
-        hittable.accept(visitor);
+        HitVisitor visitor = new HitVisitor();
+        visitor.visit(hittable, this);
+
         int result = visitor.getResult();
+
         this.addPoints(result);
     }
 
@@ -60,7 +62,7 @@ public class Game {
         return score;
     }
 
-    public int getBall_counter() {
+    public int getBallCounter() {
         return ball_counter;
     }
 

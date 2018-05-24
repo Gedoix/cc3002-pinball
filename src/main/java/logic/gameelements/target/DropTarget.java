@@ -1,5 +1,8 @@
 package logic.gameelements.target;
 
+import controller.Game;
+import logic.utils.GameElementVisitor;
+
 public class DropTarget extends AbstractTarget {
 
     /**
@@ -23,6 +26,10 @@ public class DropTarget extends AbstractTarget {
      */
     @Override
     protected void hittableBehaviour() {
-        this.visitor.updateGameForDropTarget();
+    }
+
+    @Override
+    public void accept(GameElementVisitor visitor, Game game) {
+        visitor.visitingDropTarget(this, game);
     }
 }
