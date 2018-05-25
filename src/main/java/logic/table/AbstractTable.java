@@ -159,7 +159,7 @@ public abstract class AbstractTable implements Table {
         return this.playable;
     }
 
-    //  Utility class methods
+    //  Utility class methods for subclass use
 
     /**
      * Adds a KickerBumper object to the table.

@@ -244,55 +244,102 @@ public class Game {
      * Creates a new playable instance of {@link DefaultTable}.
      *
      * @param name              name of the table.
-     * @param kicker_bumpers    amount of kikker bumpers.
+     * @param kicker_bumpers    amount of kicker bumpers.
      * @param pop_bumpers       amount of pop bumpers.
      * @param spot_targets      amount of spot targets.
      * @param drop_targets      amount of drop targets.
      * @return                  the new table.
      */
-    public Table createTable(String name, int kicker_bumpers, int pop_bumpers, int spot_targets, int drop_targets) {
+    private Table createTable(String name, int kicker_bumpers, int pop_bumpers, int spot_targets, int drop_targets) {
         return new DefaultTable(name, kicker_bumpers, pop_bumpers, spot_targets, drop_targets);
     }
 
     //  Basic interactions
 
+    /**
+     * Adds the specified amount of points to the game score.
+     *
+     * @param points    Amount to add to the score.
+     */
     public void addPoints(int points) {
         score += points;
     }
 
+    /**
+     * Adds a ball to the game's ball counter.
+     */
     public void addBall() {
         ball_counter++;
     }
 
+    /**
+     * Removes a ball from the game's ball counter.
+     */
     public void removeBall() {
         ball_counter--;
     }
 
+    /**
+     * Triggers the game's instance of {@link ExtraBallBonus}, adding a ball to the game.
+     */
     public void triggerExtraBallBonus() {
         this.extra_ball_bonus.trigger(this);
     }
 
+    /**
+     * Triggers the game's instance of {@link JackPotBonus}, adding 100000 (100 thousand) points to the game score.
+     */
     public void triggerJackPotBonus() {
         this.jack_pot_bonus.trigger(this);
     }
 
-    public void triggerDropTargetBonus() {
+    /**
+     * Triggers the game's instance of {@link DropTargetBonus}, adding 1000000 (1 million) points to the game score.
+     */
+    private void triggerDropTargetBonus() {
         this.drop_target_bonus.trigger(this);
     }
 
     //  Table-dependant interactions
 
-    public void hit(Hittable hittable) {
+    /**
+     *  Instantly upgrades all bumpers in the game's table.
+     */
+    public void upgradeAllBumpers() {
+        current_table.upgradeAllBumpers();
+    }
+
+    //  Update methods for runtime behavior, currently unused, but will be implemented along with the game view
+
+    /**
+     * Main update method for the game, to be used once every frame.
+     *
+     * Should take into account positioning of the ball and all objects within the table
+     * and call the {@link #hit(Hittable)} method accordingly.
+     */
+    public void update() {
+        if (current_table.getNumberOfDropTargets() != 0 &&
+                current_table.getNumberOfDropTargets() - current_table.getCurrentlyDroppedDropTargets() == 0) {
+            this.triggerDropTargetBonus();
+        }
+        //  if(...) {
+        //      this.hit(getTable().getBumpers()[i])
+        //  }
+    }
+
+    /**
+     * Uses double dispatch and a visitor pattern class to hit a hittable game element, and trigger any events
+     * that follow, excepting the {@link DropTargetBonus}, which only gets triggered by the {@link #update()} method.
+     *
+     * @param hittable  The hittable game element to be hit.
+     */
+    private void hit(Hittable hittable) {
         HitVisitor visitor = new HitVisitor();
         visitor.visit(hittable, this);
 
         int result = visitor.getResult();
 
         this.addPoints(result);
-    }
-
-    public void upgradeAllBumpers() {
-        current_table.upgradeAllBumpers();
     }
 
 }

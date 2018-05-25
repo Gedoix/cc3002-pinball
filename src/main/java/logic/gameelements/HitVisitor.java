@@ -58,7 +58,7 @@ public class HitVisitor implements GameElementVisitor {
      *
      * @param random_seed Random generator seed.
      */
-    public HitVisitor(long random_seed) {
+    HitVisitor(long random_seed) {
         this();
         this.generator.setSeed(random_seed);
     }

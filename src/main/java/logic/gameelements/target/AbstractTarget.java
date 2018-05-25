@@ -54,9 +54,21 @@ public abstract class AbstractTarget extends AbstractHittable implements Target 
 
     /**
      * {@inheritDoc}
+     *
+     * Does nothing.
      */
     @Override
-    protected void hittableBehaviour(){}
+    protected void beforeHitBehaviour(){}
+
+    /**
+     * {@inheritDoc}
+     *
+     * Makes sure the target deactivates on hit.
+     */
+    @Override
+    protected void afterHitBehaviour() {
+        this.deactivate();
+    }
 
     //  Target method implementations
 
@@ -85,7 +97,7 @@ public abstract class AbstractTarget extends AbstractHittable implements Target 
      */
     private void activate() {
         this.active = true;
-        this.setScoreGiven(this.active_score_given);
+        this.setScore(this.active_score_given);
     }
 
     /**
@@ -93,6 +105,6 @@ public abstract class AbstractTarget extends AbstractHittable implements Target 
      */
     private void deactivate() {
         this.active = false;
-        this.setScoreGiven(0);
+        this.setScore(0);
     }
 }

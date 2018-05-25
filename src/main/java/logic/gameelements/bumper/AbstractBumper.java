@@ -86,14 +86,21 @@ public abstract class AbstractBumper extends AbstractHittable implements Bumper{
      * Makes sure the object upgrades when needed.
      */
     @Override
-    protected void hittableBehaviour() {
+    protected void beforeHitBehaviour() {
         if (hits_left_to_upgrade != 0) {
-            if (hits_left_to_upgrade == 1) {
+            if (hits_left_to_upgrade-- == 1) {
                 this.upgrade();
             }
-            hits_left_to_upgrade--;
         }
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Does nothing.
+     */
+    @Override
+    protected void afterHitBehaviour() {}
 
     //  Bumper method implementations
 
@@ -125,7 +132,7 @@ public abstract class AbstractBumper extends AbstractHittable implements Bumper{
     @Override
     public void upgrade() {
         this.upgraded = true;
-        this.setScoreGiven(this.upgraded_score_given);
+        this.setScore(this.upgraded_score_given);
         this.hits_left_to_upgrade = 0;
     }
 
@@ -137,7 +144,7 @@ public abstract class AbstractBumper extends AbstractHittable implements Bumper{
     @Override
     public void downgrade() {
         this.upgraded = false;
-        this.setScoreGiven(this.not_upgraded_score_given);
+        this.setScore(this.not_upgraded_score_given);
         this.hits_left_to_upgrade = this.total_hits_to_upgrade;
     }
 

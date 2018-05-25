@@ -28,4 +28,13 @@ public interface Hittable extends VisitableGameElement {
      * @return the current score of the object when hit
      */
     int getScore();
+
+    /**
+     * Gives the object the capacity to remember if it's been hit at some point, for testing purposes.
+     *
+     * @author Diego Ortego Prieto
+     *
+     * @return  true only if the hittable has been hit before.
+     */
+    boolean wasHit();
 }
