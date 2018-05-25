@@ -1,18 +1,25 @@
 package logic.utils;
 
 import controller.Game;
-import logic.gameelements.bumper.Bumper;
 import logic.gameelements.bumper.KickerBumper;
 import logic.gameelements.bumper.PopBumper;
 import logic.gameelements.target.DropTarget;
 import logic.gameelements.target.SpotTarget;
 
 /**
- * Interface for implementing the visitor pattern.
+ * Interface for implementing the visitor pattern over Game elements.
  *
  * @author Diego Ortego Prieto
+ * @see VisitableGameElement
+ * @see KickerBumper
+ * @see PopBumper
+ * @see DropTarget
+ * @see SpotTarget
+ * @see logic.gameelements.HitVisitor
  */
 public interface GameElementVisitor {
+
+    //  Double dispatch visit method
 
     /**
      * Method for visiting certain game elements, implementation includes double dispatch.
@@ -22,6 +29,8 @@ public interface GameElementVisitor {
      * @param game      Link to the {@link Game} object calling this method, for game event triggering.
      */
     void visit(VisitableGameElement element, Game game);
+
+    //  Visiting methods for all Game Elements
 
     /**
      * Visiting method for {@link KickerBumper} type objects.

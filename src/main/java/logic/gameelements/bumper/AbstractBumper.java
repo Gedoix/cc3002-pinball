@@ -1,8 +1,6 @@
 package logic.gameelements.bumper;
 
-import controller.Game;
 import logic.gameelements.AbstractHittable;
-import logic.utils.GameElementVisitor;
 
 /**
  * Abstract class implementing basic bumper behaviour.
@@ -16,8 +14,11 @@ import logic.utils.GameElementVisitor;
  */
 public abstract class AbstractBumper extends AbstractHittable implements Bumper{
 
+    //  Fields
+
     /**
-     * Value of the answer to "is the bumper upgraded?"
+     * Value of "is the bumper upgraded?"
+     *
      * @see #upgrade()
      * @see #downgrade()
      */
@@ -33,23 +34,27 @@ public abstract class AbstractBumper extends AbstractHittable implements Bumper{
     private int hits_left_to_upgrade;
 
     /**
-     * Total amount of hits needed for the bumper to upgrade before it gets hit for the first time.
+     * Total amount of hits needed for the bumper to upgrade, before it gets hit for the first time.
      *
      * @see #hits_left_to_upgrade
      */
     private final int total_hits_to_upgrade;
+
     /**
      * Score out-putted on {@link #hit()} when not upgraded.
      *
      * @see #current_score_given
      */
     private final int not_upgraded_score_given;
+
     /**
      * Score out-putted on {@link #hit()} when upgraded.
      *
      * @see #current_score_given
      */
     private final int upgraded_score_given;
+
+    //  Constructor
 
     /**
      * Constructor method to be used by subclass constructors.
@@ -61,7 +66,7 @@ public abstract class AbstractBumper extends AbstractHittable implements Bumper{
      */
     AbstractBumper(int default_score_given, int upgraded_score_given, int total_hits_to_upgrade, boolean upgraded) {
         super(default_score_given);
-        this.not_upgraded_score_given = this.getScoreGiven();
+        this.not_upgraded_score_given = this.getScore();
         this.upgraded_score_given = upgraded_score_given;
         this.total_hits_to_upgrade = total_hits_to_upgrade;
         if (upgraded) {
@@ -72,6 +77,8 @@ public abstract class AbstractBumper extends AbstractHittable implements Bumper{
         }
         hits_left_to_upgrade = this.total_hits_to_upgrade;
     }
+
+    //  AbstractHittable method overriding
 
     /**
      * {@inheritDoc}
@@ -87,6 +94,8 @@ public abstract class AbstractBumper extends AbstractHittable implements Bumper{
             hits_left_to_upgrade--;
         }
     }
+
+    //  Bumper method implementations
 
     /**
      * {@inheritDoc}
@@ -110,6 +119,7 @@ public abstract class AbstractBumper extends AbstractHittable implements Bumper{
 
     /**
      * {@inheritDoc}
+     *
      * And setting {@link #hits_left_to_upgrade} to 0.
      */
     @Override
@@ -121,6 +131,7 @@ public abstract class AbstractBumper extends AbstractHittable implements Bumper{
 
     /**
      * {@inheritDoc}
+     *
      * And resetting {@link #hits_left_to_upgrade} to it's original value.
      */
     @Override

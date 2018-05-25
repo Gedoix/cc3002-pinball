@@ -9,6 +9,7 @@ import logic.utils.VisitableGameElement;
  *
  * @author Juan-Pablo Silva
  * @see AbstractHittable
+ * @see logic.utils.VisitableGameElement
  * @see logic.gameelements.bumper.Bumper
  * @see logic.gameelements.target.Target
  */

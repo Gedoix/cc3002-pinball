@@ -4,7 +4,7 @@ import controller.Game;
 import logic.utils.GameElementVisitor;
 
 /**
- * Bumper type class for use in {@link controller.Game}.
+ * Bumper type class for use in {@link Game}.
  *
  * KickerBumpers give a score of 500 points on hit.
  * KickerBumpers can be upgraded after 5 hits, changing the given score to 1000 points.
@@ -15,6 +15,8 @@ import logic.utils.GameElementVisitor;
  * @see PopBumper
  */
 public class KickerBumper extends AbstractBumper {
+
+    //  Constructors
 
     /**
      * Default constructor method for the class.
@@ -28,10 +30,18 @@ public class KickerBumper extends AbstractBumper {
      *
      * @param upgraded  Initial upgrade status of the object.
      */
-    protected KickerBumper(boolean upgraded) {
+    public KickerBumper(boolean upgraded) {
         super(500, 1000, 5, upgraded);
     }
 
+    //  VisitableGameElement method implementation
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param visitor A {@link GameElementVisitor} type object that will make changes.
+     * @param game    Link to the {@link Game} object, for event triggering down the line.
+     */
     @Override
     public void accept(GameElementVisitor visitor, Game game) {
         visitor.visitingKickerBumper(this, game);

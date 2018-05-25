@@ -11,6 +11,7 @@ import controller.Game;
  * @see DropTargetBonus
  */
 public interface Bonus {
+
     /**
      * Gets the number of times the bonus has been triggered.
      *

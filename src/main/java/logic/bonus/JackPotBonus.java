@@ -14,10 +14,14 @@ import controller.Game;
  */
 public class JackPotBonus extends AbstractBonus {
 
+    //  Fields
+
     /**
      * Amount of points to be added to the score when triggered.
      */
     private int trigger_points;
+
+    //  Constructor
 
     /**
      * Constructor method.
@@ -27,6 +31,8 @@ public class JackPotBonus extends AbstractBonus {
         trigger_points = 100000;
     }
 
+    //  AbstractBonus method implementations
+
     /**
      * {@inheritDoc}
      * Adds an extra 100000 (100 thousand) points to the {@link Game} object.
@@ -34,7 +40,7 @@ public class JackPotBonus extends AbstractBonus {
      * @param game The game controller object.
      */
     @Override
-    void bonusBehaviour(Game game) {
+    protected void bonusBehaviour(Game game) {
         game.addPoints(trigger_points);
     }
 

@@ -11,7 +11,16 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Abstract class implementing basic Table behaviours.
+ *
+ * @author Diego Ortego Prieto
+ * @see Table
+ * @see DefaultTable
+ */
 public abstract class AbstractTable implements Table {
+
+    //  Fields
 
     /**
      * Name of the table.
@@ -27,10 +36,29 @@ public abstract class AbstractTable implements Table {
      * All bumpers are stored here, regardless of type.
      */
     private final List<Bumper> bumpers;
+
+    /**
+     * All SpotTargets are store here.
+     */
     private final List<SpotTarget> spot_targets;
+
+    /**
+     * All DropTargets are stored here.
+     */
     private final List<DropTarget> drop_targets;
+
+    /**
+     * All Targets are stored here, regardless of type.
+     */
     private List<Target> targets;
 
+    //  Constructor
+
+    /**
+     * Constructor method for use by subclasses.
+     *
+     * @param name  Name of the table.
+     */
     AbstractTable(String name) {
         this.name = name;
         this.bumpers = new LinkedList<>();
@@ -39,28 +67,10 @@ public abstract class AbstractTable implements Table {
         this.targets = new ArrayList<>();
     }
 
-    void addKickerBumper() {
-        this.bumpers.add(new KickerBumper());
-    }
-
-    void addPopBumper() {
-        this.bumpers.add(new PopBumper());
-    }
-
-    void addSpotTarget() {
-        this.spot_targets.add(new SpotTarget());
-    }
-
-    void addDropTarget() {
-        this.drop_targets.add(new DropTarget());
-    }
-
-    void setPlayableTrue() {
-        this.playable = true;
-    }
+    //  Table method implementations
 
     /**
-     * Gets the table name.
+     * {@inheritDoc}
      *
      * @return the table's name
      */
@@ -70,7 +80,7 @@ public abstract class AbstractTable implements Table {
     }
 
     /**
-     * Gets the number of {@link DropTarget} in the table.
+     * {@inheritDoc}
      *
      * @return the number of DropTargets in the table
      */
@@ -80,7 +90,7 @@ public abstract class AbstractTable implements Table {
     }
 
     /**
-     * Gets the number of {@link DropTarget} that are currently dropped or inactive.
+     * {@inheritDoc}
      *
      * @return the number of DropTargets that are currently inactive
      */
@@ -96,7 +106,7 @@ public abstract class AbstractTable implements Table {
     }
 
     /**
-     * Gets the {@link List} of {@link Bumper}s in the table.
+     * {@inheritDoc}
      *
      * @return the bumpers in the table
      */
@@ -106,7 +116,7 @@ public abstract class AbstractTable implements Table {
     }
 
     /**
-     * Gets the {@link List} of {@link Target}s in the table.
+     * {@inheritDoc}
      *
      * @return the targets in the table
      */
@@ -119,7 +129,7 @@ public abstract class AbstractTable implements Table {
     }
 
     /**
-     * Resets all {@link DropTarget} in the table. Make them active.
+     * {@inheritDoc}
      */
     @Override
     public void resetDropTargets() {
@@ -129,7 +139,7 @@ public abstract class AbstractTable implements Table {
     }
 
     /**
-     * Upgrade all {@link Bumper}s in the table.
+     * {@inheritDoc}
      */
     @Override
     public void upgradeAllBumpers() {
@@ -139,7 +149,7 @@ public abstract class AbstractTable implements Table {
     }
 
     /**
-     * Gets whether the table is playable or not.
+     * {@inheritDoc}
      *
      * @return true if the table is playable, false otherwise
      */
@@ -147,4 +157,42 @@ public abstract class AbstractTable implements Table {
     public boolean isPlayableTable() {
         return this.playable;
     }
+
+    //  Utility class methods
+
+    /**
+     * Adds a KickerBumper object to the table.
+     */
+    void addKickerBumper() {
+        this.bumpers.add(new KickerBumper());
+    }
+
+    /**
+     * Adds a PopBumper object to the table.
+     */
+    void addPopBumper() {
+        this.bumpers.add(new PopBumper());
+    }
+
+    /**
+     * Adds a SpotTarget object to the table.
+     */
+    void addSpotTarget() {
+        this.spot_targets.add(new SpotTarget());
+    }
+
+    /**
+     * Adds a DropTarget object to the table.
+     */
+    void addDropTarget() {
+        this.drop_targets.add(new DropTarget());
+    }
+
+    /**
+     * Sets the table object to playable permanently.
+     */
+    void setPlayableTrue() {
+        this.playable = true;
+    }
+
 }

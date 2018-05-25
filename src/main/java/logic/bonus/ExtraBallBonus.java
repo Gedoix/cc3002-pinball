@@ -14,11 +14,15 @@ import controller.Game;
  */
 public class ExtraBallBonus extends AbstractBonus {
 
+    //  Constructor
+
     /**
      * Constructor method.
      * Calls to {@link AbstractBonus}'s constructor implicitly.
      */
     public ExtraBallBonus() {}
+
+    //  AbstractBonus method implementations
 
     /**
      * {@inheritDoc}
@@ -27,7 +31,7 @@ public class ExtraBallBonus extends AbstractBonus {
      * @param game The game controller object.
      */
     @Override
-    void bonusBehaviour(Game game) {
+    protected void bonusBehaviour(Game game) {
         game.addBall();
     }
 

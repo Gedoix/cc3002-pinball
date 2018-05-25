@@ -3,7 +3,7 @@ package logic.bonus;
 import controller.Game;
 
 /**
- * Abstract class that implements basic bonus behaviour.
+ * Abstract class implementing basic bonus behaviour.
  *
  * @author Diego Ortego Prieto
  * @see Bonus
@@ -11,20 +11,25 @@ import controller.Game;
  * @see JackPotBonus
  * @see DropTargetBonus
  */
-
 public abstract class AbstractBonus implements Bonus {
+
+    //  Fields
 
     /**
      * Counts the amount of times the bonus has been triggered.
      */
     private int trigger_counter;
 
+    //  Constructor
+
     /**
-     * Constructor to be summoned by sub-class constructors.
+     * Constructor method to be summoned by sub-class constructors.
      */
     AbstractBonus(){
         trigger_counter = 0;
     }
+
+    //  Bonus method implementations
 
     /**
      * {@inheritDoc}
@@ -51,6 +56,8 @@ public abstract class AbstractBonus implements Bonus {
         trigger_counter++;
         bonusBehaviour(game);
     }
+
+    //  Methods for template pattern implementations by subclasses
 
     /**
      * Trigger the specific action the bonus does and applies it to the {@link Game} object.

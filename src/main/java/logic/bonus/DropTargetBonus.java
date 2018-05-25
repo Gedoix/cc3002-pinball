@@ -15,27 +15,37 @@ import controller.Game;
  */
 public class DropTargetBonus extends AbstractBonus {
 
+    //  Fields
+
     /**
      * Amount of points to be added to the score when triggered.
      */
     private int trigger_points;
 
+    //  Constructor
+
     /**
      * Constructor method.
      * Calls to {@link AbstractBonus}'s constructor implicitly.
      */
-    public DropTargetBonus(){}
+    public DropTargetBonus(){
+        this.trigger_points = 1000000;
+    }
+
+    //  AbstractBonus method implementations
 
     /**
      * {@inheritDoc}
+     *
      * Adds an extra 1000000 (1 million) points to the score
      * and upgrades all {@link logic.gameelements.bumper.Bumper} type objects in the {@link Game} object.
      *
      * @param game The game controller object.
      */
     @Override
-    void bonusBehaviour(Game game) {
+    protected void bonusBehaviour(Game game) {
         game.addPoints(trigger_points);
         game.upgradeAllBumpers();
     }
+
 }

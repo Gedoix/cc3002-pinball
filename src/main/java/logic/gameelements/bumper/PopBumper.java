@@ -16,6 +16,8 @@ import logic.utils.GameElementVisitor;
  */
 public class PopBumper extends AbstractBumper {
 
+    //  Constructors
+
     /**
      * Default constructor method for the class.
      */
@@ -28,10 +30,18 @@ public class PopBumper extends AbstractBumper {
      *
      * @param upgraded  Initial upgrade status of the object.
      */
-    protected PopBumper(boolean upgraded) {
+    public PopBumper(boolean upgraded) {
         super(100, 300, 3, upgraded);
     }
 
+    //  VisitableGameElement method implementation
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param visitor A {@link GameElementVisitor} type object that will make changes.
+     * @param game    Link to the {@link Game} object, for event triggering down the line.
+     */
     @Override
     public void accept(GameElementVisitor visitor, Game game) {
         visitor.visitingPopBumper(this, game);

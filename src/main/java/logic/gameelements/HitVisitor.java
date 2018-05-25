@@ -6,25 +6,39 @@ import logic.gameelements.bumper.KickerBumper;
 import logic.gameelements.bumper.PopBumper;
 import logic.gameelements.target.DropTarget;
 import logic.gameelements.target.SpotTarget;
-import logic.utils.VisitableGameElement;
 import logic.utils.GameElementVisitor;
+import logic.utils.VisitableGameElement;
 
 import java.util.Random;
 
+/**
+ * Visitor class for hitting hittable Game elements.
+ *
+ * @author Diego Ortego Prieto
+ * @see GameElementVisitor
+ * @see VisitableGameElement
+ * @see KickerBumper
+ * @see PopBumper
+ * @see DropTarget
+ * @see SpotTarget
+ */
 public class HitVisitor implements GameElementVisitor {
+
+    //  Fields
 
     /**
      * Random number generator for use in some methods.
      *
      * @see Random
      */
-    private Random generator;
+    private final Random generator;
 
     /**
      * Resulting score after a successful hit.
      */
     private int result;
 
+    //  Constructors
 
     /**
      * Construction method that accepts a seed for the pseudo-random aspects of some methods.
@@ -48,6 +62,19 @@ public class HitVisitor implements GameElementVisitor {
         this.generator = new Random();
     }
 
+    //  Getter for score result
+
+    /**
+     * Method for returning a score value back to {@link Game}.
+     *
+     * @return  Resulting game score.
+     */
+    public int getResult() {
+        return result;
+    }
+
+    //  GameElementVisitor method overriding
+
     /**
      * {@inheritDoc}
      *
@@ -57,15 +84,6 @@ public class HitVisitor implements GameElementVisitor {
     @Override
     public void visit(VisitableGameElement element, Game game) {
         element.accept(this, game);
-    }
-
-    /**
-     * Method for returning a score value back to {@link Game}.
-     *
-     * @return  Resulting game score.
-     */
-    public int getResult() {
-        return result;
     }
 
     /**
@@ -118,8 +136,10 @@ public class HitVisitor implements GameElementVisitor {
         updateGameForSpotTarget(game);
     }
 
+    //  Private "inside" behaviours
+
     /**
-     * Handles both hit behaviour for both bumper types.
+     * Handles hit behaviour for both bumper types.
      *
      * @param bumper    Element to be visited.
      * @param game      Link to the {@link Game} object calling this method, for game event triggering.
@@ -136,18 +156,33 @@ public class HitVisitor implements GameElementVisitor {
         }
     }
 
+    /**
+     * Uses a random number generator to ensure {@link logic.bonus.ExtraBallBonus} only triggers on a 0.1 probability.
+     *
+     * @param game  Link to the {@link Game} object calling this method, for Extra Ball Bonus triggering.
+     */
     private void updateGameForBumper(Game game) {
         if(this.generator.nextFloat() <= 0.1) {
             game.triggerExtraBallBonus();
         }
     }
 
+    /**
+     * Uses a random number generator to ensure {@link logic.bonus.ExtraBallBonus} only triggers on a 0.3 probability.
+     *
+     * @param game  Link to the {@link Game} object calling this method, for Extra Ball Bonus triggering.
+     */
     private void updateGameForDropTarget(Game game) {
         if(this.generator.nextFloat() <= 0.3) {
             game.triggerExtraBallBonus();
         }
     }
 
+    /**
+     * Triggers {@link logic.bonus.JackPotBonus} inside game.
+     *
+     * @param game  Link to the {@link Game} object calling this method, for Jack Pot Bonus triggering.
+     */
     private void updateGameForSpotTarget(Game game) {
         game.triggerJackPotBonus();
     }
