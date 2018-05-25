@@ -61,6 +61,7 @@ public abstract class AbstractTable implements Table {
      */
     AbstractTable(String name) {
         this.name = name;
+        this.playable = false;
         this.bumpers = new LinkedList<>();
         this.spot_targets = new LinkedList<>();
         this.drop_targets = new LinkedList<>();

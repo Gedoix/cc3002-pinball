@@ -41,6 +41,15 @@ public class HitVisitor implements GameElementVisitor {
     //  Constructors
 
     /**
+     * Construction method for the class.
+     * Sets the random seed to null, so the {@link Random} class may produce one on it's own.
+     */
+    public HitVisitor() {
+        this.result = 0;
+        this.generator = new Random();
+    }
+
+    /**
      * Construction method that accepts a seed for the pseudo-random aspects of some methods.
      * Only for testing purposes.
      *
@@ -50,16 +59,8 @@ public class HitVisitor implements GameElementVisitor {
      * @param random_seed Random generator seed.
      */
     public HitVisitor(long random_seed) {
-        this.generator = new Random(random_seed);
-    }
-
-    /**
-     * Construction method for the class.
-     * Sets the random seed to null, so the {@link Random} class may produce one on it's own.
-     */
-    public HitVisitor() {
-        this.result = 0;
-        this.generator = new Random();
+        this();
+        this.generator.setSeed(random_seed);
     }
 
     //  Getter for score result

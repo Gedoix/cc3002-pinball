@@ -27,7 +27,7 @@ public class HomeworkTwoFacade {
      * @return true if the current table is playable, false otherwise
      */
     public boolean isPlayableTable() {
-        return game.isPlayableCurrentTable();
+        return game.isPlayableTable();
     }
 
     /**
@@ -66,11 +66,7 @@ public class HomeworkTwoFacade {
      * @return a new table determined by the parameters
      */
     public Table newPlayableTableWithNoTargets(String name, int numberOfBumpers, double prob) {
-        try {
-            game.addDefaultTable(name, 10, 10, 0, 0);
-            game.setCurrentTableToLastAdded();
-        } catch (Game.DuplicateNameException ignored) {}
-        return game.getLastAddedTable();
+        return game.createRandomTableNoTargets(name, numberOfBumpers, prob);
     }
 
     /**
@@ -84,7 +80,7 @@ public class HomeworkTwoFacade {
      * @return a new table determined by the parameters
      */
     public Table newFullPlayableTable(String name, int numberOfBumpers, double prob, int numberOfTargets, int numberOfDropTargets) {
-        return null;
+        return game.createRandomTable(name, numberOfBumpers, prob, numberOfTargets, numberOfDropTargets);
     }
 
     /**
@@ -94,7 +90,7 @@ public class HomeworkTwoFacade {
      * @see Bumper
      */
     public List<Bumper> getBumpers() {
-        return null;
+        return game.getBumpers();
     }
 
     /**
@@ -104,7 +100,7 @@ public class HomeworkTwoFacade {
      * @see Target
      */
     public List<Target> getTargets() {
-        return null;
+        return game.getTargets();
     }
 
     /**
@@ -113,7 +109,7 @@ public class HomeworkTwoFacade {
      * @return the name of the current table
      */
     public String getTableName() {
-        return null;
+        return game.getTableName();
     }
 
     /**
@@ -122,7 +118,7 @@ public class HomeworkTwoFacade {
      * @return the number of available balls
      */
     public int getAvailableBalls() {
-        return 0;
+        return game.getBallCounter();
     }
 
     /**
@@ -131,7 +127,7 @@ public class HomeworkTwoFacade {
      * @return the earned score
      */
     public int getCurrentScore() {
-        return 0;
+        return game.getScore();
     }
 
     /**
@@ -141,7 +137,7 @@ public class HomeworkTwoFacade {
      * @see Table
      */
     public Table getCurrentTable() {
-        return null;
+        return game.getTable();
     }
 
     /**
@@ -150,7 +146,7 @@ public class HomeworkTwoFacade {
      * @param newTable the new table
      */
     public void setGameTable(Table newTable) {
-
+        game.setTable(newTable);
     }
 
     /**
@@ -159,7 +155,8 @@ public class HomeworkTwoFacade {
      * @return the new number of available balls
      */
     public int dropBall() {
-        return 0;
+        game.removeBall();
+        return game.getBallCounter();
     }
 
     /**
@@ -168,6 +165,6 @@ public class HomeworkTwoFacade {
      * @return true if the game is over, false otherwise
      */
     public boolean gameOver() {
-        return false;
+        return game.isGameOver();
     }
 }
