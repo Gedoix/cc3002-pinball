@@ -1,16 +1,24 @@
 package logic.table;
 
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class NullTableTest {
 
+    private NullTable table;
+
     @Before
     public void setUp() {
+        table = new NullTable();
     }
 
-    public void nullTable() throws Exception {
+    @Test
+    public void nullTable() {
+        assertNull(table.getTableName());
+        assertFalse(table.isPlayableTable());
+        assertEquals(0, table.getBumpers().size());
+        assertEquals(0, table.getTargets().size());
     }
 }
