@@ -44,4 +44,15 @@ public class JackPotBonus extends AbstractBonus {
         game.addPoints(trigger_points);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param object    Possible bonus object to be compared to.
+     * @return          Weather or not the objects are JackPotBonuses.
+     */
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof JackPotBonus;
+    }
+
 }

@@ -48,4 +48,15 @@ public class DropTargetBonus extends AbstractBonus {
         game.upgradeAllBumpers();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param object    Possible bonus object to be compared to.
+     * @return          Weather or not the objects are DropTargetBonuses.
+     */
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof DropTargetBonus;
+    }
+
 }

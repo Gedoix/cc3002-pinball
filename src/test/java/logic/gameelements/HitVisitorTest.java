@@ -22,7 +22,7 @@ public class HitVisitorTest {
     @Before
     public void setUp() {
         game = new Game();
-        visitor = new HitVisitor(0);
+        visitor = new HitVisitor();
         hittable1 = new KickerBumper();
         hittable2 = new PopBumper();
         hittable3 = new DropTarget();

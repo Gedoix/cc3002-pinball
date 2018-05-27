@@ -45,22 +45,21 @@ public class HitVisitor implements GameElementVisitor {
      * Sets the random seed to null, so the {@link Random} class may produce one on it's own.
      */
     public HitVisitor() {
-        this.result = 0;
-        this.generator = new Random();
+        this(new Random());
     }
 
     /**
-     * Construction method that accepts a seed for the pseudo-random aspects of some methods.
+     * Construction method that accepts a generator for the pseudo-random aspects of some methods.
      * Only for testing purposes.
      *
      * @see #updateGameForBumper(Game)
      * @see #updateGameForDropTarget(Game)
      *
-     * @param random_seed Random generator seed.
+     * @param generator Random generator.
      */
-    HitVisitor(long random_seed) {
-        this();
-        this.generator.setSeed(random_seed);
+    public HitVisitor(Random generator) {
+        this.result = 0;
+        this.generator = generator;
     }
 
     //  Getter for score result
@@ -163,7 +162,9 @@ public class HitVisitor implements GameElementVisitor {
      * @param game  Link to the {@link Game} object calling this method, for Extra Ball Bonus triggering.
      */
     private void updateGameForBumper(Game game) {
-        if(this.generator.nextFloat() <= 0.1) {
+        float next = generator.nextFloat();
+        System.out.println(next);
+        if(next <= 0.1) {
             game.triggerExtraBallBonus();
         }
     }
@@ -174,7 +175,8 @@ public class HitVisitor implements GameElementVisitor {
      * @param game  Link to the {@link Game} object calling this method, for Extra Ball Bonus triggering.
      */
     private void updateGameForDropTarget(Game game) {
-        if(this.generator.nextFloat() <= 0.3) {
+        float next = generator.nextFloat();
+        if(next <= 0.3) {
             game.triggerExtraBallBonus();
         }
     }

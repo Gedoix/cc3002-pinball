@@ -35,4 +35,15 @@ public class ExtraBallBonus extends AbstractBonus {
         game.addBall();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param object    Possible bonus object to be compared to.
+     * @return          Weather or not the objects are ExtraBallBonuses.
+     */
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof ExtraBallBonus;
+    }
+
 }

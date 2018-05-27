@@ -11,7 +11,7 @@ import controller.Game;
  * @see JackPotBonus
  * @see DropTargetBonus
  */
-public abstract class AbstractBonus implements Bonus {
+public abstract class AbstractBonus extends Object implements Bonus {
 
     //  Fields
 
@@ -65,5 +65,17 @@ public abstract class AbstractBonus implements Bonus {
      * @param game The game controller object.
      */
     abstract void bonusBehaviour(Game game);
+
+    //  Testing methods for subclasses
+
+    /**
+     * Returns true if both objects are of the same sub-class,
+     * since there's no difference between instances of the same Bonus.
+     *
+     * @param object    Possible bonus object to be compared to.
+     * @return          Weather or not the objects are equal.
+     */
+    @Override
+    public abstract boolean equals(Object object);
 
 }

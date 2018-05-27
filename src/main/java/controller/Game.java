@@ -58,12 +58,34 @@ public class Game {
      */
     private final Random generator;
 
+    /**
+     * Weather or not the class is currently being tested.
+     */
+    private final boolean testing;
+
     //  Constructors
 
     /**
      * Main constructor method for the class
      */
     public Game() {
+        this(false);
+    }
+
+    /**
+     * Constructor method for testing use only
+     *
+     * @param random_seed   Seed for the game's random number generator.
+     */
+    public Game(long random_seed) {
+        this(true);
+        this.generator.setSeed(random_seed);
+    }
+
+    /**
+     * Private specific constructor.
+     */
+    private Game(boolean testing) {
         this.score = 0;
         this.ball_counter = 1;
 
@@ -74,16 +96,8 @@ public class Game {
         this.current_table = new NullTable();
 
         this.generator = new Random();
-    }
 
-    /**
-     * Constructor method for testing use only
-     *
-     * @param random_seed   Seed for the game's random number generator.
-     */
-    public Game(long random_seed) {
-        this();
-        this.generator.setSeed(random_seed);
+        this.testing = testing;
     }
 
     //  Basic getter methods
@@ -276,7 +290,9 @@ public class Game {
      * Removes a ball from the game's ball counter.
      */
     public void removeBall() {
-        ball_counter--;
+        if(ball_counter != 0) {
+            ball_counter--;
+        }
     }
 
     /**
@@ -333,8 +349,14 @@ public class Game {
      *
      * @param hittable  The hittable game element to be hit.
      */
-    private void hit(Hittable hittable) {
-        HitVisitor visitor = new HitVisitor();
+    public void hit(Hittable hittable) {
+        HitVisitor visitor;
+        if(this.testing) {
+            visitor = new HitVisitor(this.generator);
+        }
+        else {
+            visitor = new HitVisitor();
+        }
         visitor.visit(hittable, this);
 
         int result = visitor.getResult();
