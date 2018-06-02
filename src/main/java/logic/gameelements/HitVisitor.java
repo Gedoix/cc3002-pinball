@@ -120,8 +120,15 @@ public class HitVisitor implements GameElementVisitor {
      */
     @Override
     public void visitingDropTarget(DropTarget dropTarget, Game game) {
+        boolean previous = dropTarget.isActive();
+
         result = dropTarget.hit();
-        updateGameForDropTarget(game);
+
+        boolean after = dropTarget.isActive();
+
+        if(previous && !after) {
+            updateGameForDropTarget(game);
+        }
     }
 
     /**
@@ -132,8 +139,15 @@ public class HitVisitor implements GameElementVisitor {
      */
     @Override
     public void visitingSpotTarget(SpotTarget spotTarget, Game game) {
+        boolean previous = spotTarget.isActive();
+
         result = spotTarget.hit();
-        updateGameForSpotTarget(game);
+
+        boolean after = spotTarget.isActive();
+
+        if(previous && !after) {
+            updateGameForSpotTarget(game);
+        }
     }
 
     //  Private "inside" behaviours
@@ -163,7 +177,6 @@ public class HitVisitor implements GameElementVisitor {
      */
     private void updateGameForBumper(Game game) {
         float next = generator.nextFloat();
-        System.out.println(next);
         if(next <= 0.1) {
             game.triggerExtraBallBonus();
         }

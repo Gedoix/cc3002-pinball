@@ -5,6 +5,8 @@ import logic.bonus.ExtraBallBonus;
 import logic.bonus.JackPotBonus;
 import logic.gameelements.Hittable;
 import logic.gameelements.bumper.Bumper;
+import logic.gameelements.bumper.KickerBumper;
+import logic.gameelements.bumper.PopBumper;
 import logic.gameelements.target.SpotTarget;
 import logic.gameelements.target.Target;
 import logic.table.DefaultTable;
@@ -13,9 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
@@ -23,11 +23,10 @@ public class GameTest {
 
     private Game game;
 
-    private long seed = 1712567478;
-
     @Before
     public void setUp() {
-        game = new Game(this.seed);
+        long seed = 1712567478;
+        game = new Game(seed);
     }
 
     @Test
@@ -71,31 +70,63 @@ public class GameTest {
     }
 
     @Test
-    public void isPlayableTable() {
-    }
-
-    @Test
     public void getTableName() {
+        Table table = new DefaultTable("hello world", 1, 2, 3, 4);
+        game.setTable(table);
+        assertEquals("hello world", game.getTableName());
     }
 
     @Test
     public void getBumpers() {
+        Table table = new DefaultTable("hello world", 123, 456, 17, 13);
+        game.setTable(table);
+        List<Bumper> bumpers = game.getBumpers();
+        assertEquals(123+456, bumpers.size());
     }
 
     @Test
     public void getTargets() {
-    }
-
-    @Test
-    public void setTable() {
+        Table table = new DefaultTable("hello world", 123, 456, 17, 13);
+        game.setTable(table);
+        List<Target> targets = game.getTargets();
+        assertEquals(17+13, targets.size());
     }
 
     @Test
     public void createRandomTableNoTargets() {
+        Table table = game.createRandomTableNoTargets("hello world",  1000, 0.5);
+        game.setTable(table);
+        assertEquals(table, game.getTable());
+        assertTrue(game.isPlayableTable());
+        assertEquals(0, game.getTargets().size());
+        int pop_bumper_exceptions_start_at = 525;
+        //  475/1000 cases are pop bumpers, which is acceptable as a 0.5 probability.
+        int random_counter = 0;
+        checkRandomBumpers(random_counter, pop_bumper_exceptions_start_at);
     }
 
     @Test
     public void createRandomTable() {
+        Table table = game.createRandomTable("hello world",  1000, 0.5, 10, 10);
+        game.setTable(table);
+        assertEquals(table, game.getTable());
+        assertTrue(game.isPlayableTable());
+        int pop_bumper_exceptions_start_at = 525;
+        //  475/1000 cases are pop bumpers, which is acceptable as a 0.5 probability.
+        int random_counter = 0;
+        checkRandomBumpers(random_counter, pop_bumper_exceptions_start_at);
+    }
+
+    private void checkRandomBumpers(int random_counter, int bumper_exceptions_start_point) {
+        for (Bumper bumper : game.getBumpers()) {
+            random_counter++;
+            if (random_counter >= bumper_exceptions_start_point) {
+                assertTrue(bumper instanceof PopBumper);
+            }
+            else {
+                assertTrue(bumper instanceof KickerBumper);
+            }
+        }
     }
 
     @Test
@@ -190,8 +221,8 @@ public class GameTest {
     }
 
     @Test
-    public void hitTargets() {
-        Table table = new DefaultTable("hello world", 50, 50, 5, 100);
+    public void hit() {
+        Table table = new DefaultTable("hello world", 100, 100, 5, 100);
         game.setTable(table);
         int before_score;
         int before_balls;
@@ -200,68 +231,15 @@ public class GameTest {
 
         List<Hittable> list = new ArrayList<>();
         list.addAll(game.getTargets());
-
-        int random_counter = 0;
-        int random_extra_score;
-        int random_extra_balls;
-        int[] exceptions = {10, 11, 15, 20, 31, 32, 34, 36, 37, 40, 43, 48, 51, 56, 57, 60, 61, 62, 64, 68, 71, 75, 77,
-                80, 81, 84, 90, 96, 99, 101, 104};
-
-        for(Hittable hittable : list) {
-            random_counter++;
-
-            before_score = game.getScore();
-            before_balls = game.getBallCounter();
-
-            assertFalse(hittable.wasHit());
-
-            hit_score = hittable.getScore();
-
-            game.hit(hittable);
-
-            assertTrue(hittable.wasHit());
-
-            if(hittable instanceof SpotTarget) {
-                random_extra_score = 100000;
-            }
-            else {
-
-                random_extra_score = 0;
-            }
-
-            if(contains(exceptions, random_counter)) {
-                random_extra_balls = 1;
-            }
-            else {
-
-                random_extra_balls = 0;
-            }
-
-            System.out.println(random_counter);
-
-            assertEquals(before_score+hit_score+random_extra_score, game.getScore());
-
-            assertEquals(before_balls+random_extra_balls, game.getBallCounter());
-        }
-    }
-
-    @Test
-    public void hitBumpers() {
-        Table table = new DefaultTable("hello world", 50, 50, 5, 100);
-        game.setTable(table);
-        int before_score;
-        int before_balls;
-
-        int hit_score;
-
-        List<Hittable> list = new ArrayList<>();
         list.addAll(game.getBumpers());
 
         int random_counter = 0;
         int random_extra_score;
         int random_extra_balls;
-        int[] exceptions = {10, 11, 15, 20, 31, 32, 34, 36, 37, 40, 43, 48, 51, 56, 57, 60, 61, 62, 64, 68, 71, 75, 77,
+        int[] drop_target_exceptions = {10, 11, 15, 20, 31, 32, 34, 36, 37, 40, 43, 48, 51, 56, 57, 60, 61, 62, 64, 68, 71, 75, 77,
                 80, 81, 84, 90, 96, 99, 101, 104};
+        //  31/100 cases are exceptions, which is acceptable as a 0.3 probability.
+        //  The first 5 cases are spotTargets, and always add a Bonus, as expected.
 
         for(Hittable hittable : list) {
             random_counter++;
@@ -281,11 +259,47 @@ public class GameTest {
                 random_extra_score = 100000;
             }
             else {
-
                 random_extra_score = 0;
             }
 
-            if(contains(exceptions, random_counter)) {
+            if(contains(drop_target_exceptions, random_counter)) {
+                random_extra_balls = 1;
+            }
+            else {
+                random_extra_balls = 0;
+            }
+
+            assertEquals(before_score+hit_score+random_extra_score, game.getScore());
+
+            assertEquals(before_balls+random_extra_balls, game.getBallCounter());
+        }
+
+        for(Hittable hittable : list) {
+            game.hit(hittable);
+        }
+
+        random_counter = 0;
+        int[] pop_bumper_exceptions = {212, 214, 224, 238, 245, 272, 274, 296, 300};
+        //  9/100 cases are exceptions, which is acceptable as a 0.1 probability.
+
+        for(Hittable hittable : list) {
+            random_counter++;
+
+            before_score = game.getScore();
+            before_balls = game.getBallCounter();
+
+            hit_score = hittable.getScore();
+
+            game.hit(hittable);
+
+            if(hittable instanceof PopBumper) {
+                random_extra_score = 200;
+            }
+            else {
+                random_extra_score = 0;
+            }
+
+            if(contains(pop_bumper_exceptions, random_counter)) {
                 random_extra_balls = 1;
             }
             else {
@@ -293,7 +307,43 @@ public class GameTest {
                 random_extra_balls = 0;
             }
 
-            System.out.println(random_counter);
+            assertEquals(before_score+hit_score+random_extra_score, game.getScore());
+
+            assertEquals(before_balls+random_extra_balls, game.getBallCounter());
+        }
+
+        for(Hittable hittable : list) {
+            game.hit(hittable);
+        }
+
+        random_counter = 0;
+        int[] kicker_bumper_exceptions = {107, 126, 127, 141, 176, 178, 181, 182, 187, 197};
+        //  10/100 cases are exceptions, which is acceptable as a 0.1 probability.
+
+        for(Hittable hittable : list) {
+            random_counter++;
+
+            before_score = game.getScore();
+            before_balls = game.getBallCounter();
+
+            hit_score = hittable.getScore();
+
+            game.hit(hittable);
+
+            if(hittable instanceof KickerBumper) {
+                random_extra_score = 500;
+            }
+            else {
+                random_extra_score = 0;
+            }
+
+            if(contains(kicker_bumper_exceptions, random_counter)) {
+                random_extra_balls = 1;
+            }
+            else {
+
+                random_extra_balls = 0;
+            }
 
             assertEquals(before_score+hit_score+random_extra_score, game.getScore());
 
@@ -301,7 +351,7 @@ public class GameTest {
         }
     }
 
-    boolean contains(int[] array, int number) {
+    private boolean contains(int[] array, int number) {
         for(int element : array) {
             if(element == number) {
                 return true;
@@ -309,4 +359,5 @@ public class GameTest {
         }
         return false;
     }
+
 }
