@@ -46,6 +46,7 @@ public class DropTargetBonus extends AbstractBonus {
     protected void bonusBehaviour(Game game) {
         game.addPoints(trigger_points);
         game.upgradeAllBumpers();
+        game.getTable().resetDropTargets();
     }
 
     /**
