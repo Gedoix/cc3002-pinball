@@ -107,6 +107,7 @@ For the versions available, see the [tags on this repository](https://github.com
 
 * **Diego Ortego Prieto** - *Implementation and testing* - [Gedoix](https://github.com/Gedoix)
 * **Juan-Pablo Silva** - *Initial project structure template* - [juanpablos](https://github.com/juanpablos)
+* **Bensound.com** - *Background song* - [Bensound](https://www.bensound.com)
 
 See also the list of [contributors](https://github.com/Gedoix/cc3002-pinball//contributors) 
 who participated in this project.
