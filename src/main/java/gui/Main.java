@@ -2,29 +2,37 @@ package gui;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.audio.Music;
-import com.almasb.fxgl.audio.Sound;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.settings.GameSettings;
 import controller.Game;
+import gui.FXGLentities.Components.HittableComponent;
 import gui.FXGLentities.Events.HitEvent;
 import gui.FXGLentities.Events.NewGameEvent;
+import gui.FXGLentities.GameEntityFactory;
 import gui.FXGLentities.States.DefaultStateComponent;
 import gui.FXGLentities.States.FlipperStates.LeftFlipperActiveState;
 import gui.FXGLentities.States.FlipperStates.LeftFlipperInactiveState;
 import gui.FXGLentities.States.FlipperStates.RightFlipperActiveState;
 import gui.FXGLentities.States.FlipperStates.RightFlipperInactiveState;
-import gui.FXGLentities.GameEntityFactory;
-import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
+import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Shape;
+import logic.gameelements.bumper.Bumper;
+import logic.gameelements.bumper.KickerBumper;
+import logic.gameelements.bumper.PopBumper;
+import logic.gameelements.target.DropTarget;
+import logic.gameelements.target.SpotTarget;
+import logic.gameelements.target.Target;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class Main extends GameApplication {
 
@@ -40,6 +48,8 @@ public class Main extends GameApplication {
     }
 
     private Game pinball = new Game();
+
+    private Random randomizer = new Random();
 
     private boolean mute = true;
 
@@ -73,35 +83,13 @@ public class Main extends GameApplication {
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
-        this.
+
     }
 
     @Override
     protected void initGame() {
-        List<Entity> entities = new LinkedList<>();
 
-        entities.add(GameEntityFactory.newBackground());
-        entities.add(GameEntityFactory.newTableWall());
-        entities.add(GameEntityFactory.newTopLeftWall());
-        entities.add(GameEntityFactory.newTopRightWall());
-        entities.add(GameEntityFactory.newScoreCounter(pinball));
-        entities.add(GameEntityFactory.newBallCounter(pinball));
-
-        entities.add(GameEntityFactory.newKickerBumper(250, 300, 10));
-        entities.add(GameEntityFactory.newPopBumper(350, 300, 10));
-        entities.add(GameEntityFactory.newDropTarget(450, 300, 20));
-        entities.add(GameEntityFactory.newSpotTarget(550, 300, 20));
-
-        entities.add(GameEntityFactory.newBall());
-        entities.add(GameEntityFactory.newLeftFlipper());
-        entities.add(GameEntityFactory.newRightFlipper());
-
-        for (Entity entity :
-                entities) {
-            getGameWorld().addEntity(entity);
-        }
-
-        getEventBus().addEventHandler(NewGameEvent.DEFAULT, TableReset);
+        getEventBus().addEventHandler(NewGameEvent.DEFAULT, NewGameEventHandler);
         getEventBus().addEventHandler(HitEvent.HITTABLE, HittableHit);
         getEventBus().addEventHandler(HitEvent.BUMPER, BumperHit);
         getEventBus().addEventHandler(HitEvent.TARGET, TargetHit);
@@ -110,9 +98,7 @@ public class Main extends GameApplication {
         getEventBus().addEventHandler(HitEvent.SPOT_TARGET, SpotTargetHit);
         getEventBus().addEventHandler(HitEvent.DROP_TARGET, DropTargetHit);
 
-        getEventBus().fireEvent(new NewGameEvent(NewGameEvent.ANY));
-
-        //TODO: Make the music great again
+        resetAllEntitiesAndGame();
 
         if (!mute) {
             getAudioPlayer().setGlobalMusicVolume(0.1);
@@ -135,11 +121,60 @@ public class Main extends GameApplication {
 
     @Override
     protected void onUpdate(double tpf) {
-
+        pinball.update();
     }
 
     @Override
     protected void onPostUpdate(double tpf) {}
+
+    private void resetAllEntitiesAndGame() {
+        getGameWorld().removeEntities(getGameWorld().getEntities());
+
+        pinball.setTable(pinball.createRandomTable("Game", 10, 0.5, 5, 5));
+
+        List<Entity> entities = new LinkedList<>();
+
+        entities.add(GameEntityFactory.newBackground());
+        entities.add(GameEntityFactory.newTableWall());
+        entities.add(GameEntityFactory.newTopLeftWall());
+        entities.add(GameEntityFactory.newTopRightWall());
+        entities.add(GameEntityFactory.newScoreCounter(pinball));
+        entities.add(GameEntityFactory.newBallCounter(pinball));
+
+        for (Bumper bumper :
+                pinball.getBumpers()) {
+            if (bumper.getClass() == KickerBumper.class) {
+                entities.add(GameEntityFactory.newKickerBumper(250+randomizer.nextInt(300), 50+randomizer.nextInt(350), 5, (KickerBumper) bumper));
+            }
+            else {
+                entities.add(GameEntityFactory.newPopBumper(250+randomizer.nextInt(300), 50+randomizer.nextInt(350), 5, (PopBumper) bumper));
+            }
+        }
+
+        for (Target target :
+                pinball.getTargets()) {
+            if (target.getClass() == SpotTarget.class) {
+                entities.add(GameEntityFactory.newSpotTarget(250+randomizer.nextInt(300), 50+randomizer.nextInt(350), 10, (SpotTarget) target));
+            }
+            else {
+                entities.add(GameEntityFactory.newDropTarget(250+randomizer.nextInt(300), 50+randomizer.nextInt(350), 10, (DropTarget) target));
+            }
+        }
+        entities.add(GameEntityFactory.newBall());
+        entities.add(GameEntityFactory.newLeftFlipper());
+        entities.add(GameEntityFactory.newRightFlipper());
+
+        for (Entity entity :
+                entities) {
+            getGameWorld().addEntity(entity);
+        }
+
+        if (!mute) {
+            getAudioPlayer().stopMusic(background_song);
+            getAudioPlayer().playMusic(background_song);
+        }
+
+    }
 
     public static void main(String[] args) {
         launch(args);
@@ -200,12 +235,18 @@ public class Main extends GameApplication {
 
     //  Event Handlers
 
-    private EventHandler<NewGameEvent> TableReset = event -> pinball.setTable(pinball.createRandomTable("Game", 2, 0.5, 1, 1));
+    private EventHandler<NewGameEvent> NewGameEventHandler = event -> resetAllEntitiesAndGame();
 
     //  Hit Event Handlers
 
     private EventHandler<HitEvent> HittableHit = event -> {
         Entity hit = event.getHitEntity();
+        for (Node node :
+                hit.getView().getNodes()) {
+            Shape shape = (Shape)node;
+            shape.setFill(Color.WHITE);
+        }
+        pinball.hit(hit.getComponent(HittableComponent.class).getHittable());
     };
 
     private EventHandler<HitEvent> BumperHit = event -> {

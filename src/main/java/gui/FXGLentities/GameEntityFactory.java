@@ -1,6 +1,7 @@
 package gui.FXGLentities;
 
 import controller.Game;
+import gui.FXGLentities.Components.HittableComponent;
 import gui.FXGLentities.States.CounterStates.BallCounterUpdatingState;
 import gui.FXGLentities.States.CounterStates.ScoreCounterUpdatingState;
 import gui.FXGLentities.States.DefaultStateComponent;
@@ -25,6 +26,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import logic.gameelements.Hittable;
+import logic.gameelements.bumper.KickerBumper;
+import logic.gameelements.bumper.PopBumper;
+import logic.gameelements.target.DropTarget;
+import logic.gameelements.target.SpotTarget;
 
 public class GameEntityFactory implements EntityFactory {
 
@@ -109,7 +115,7 @@ public class GameEntityFactory implements EntityFactory {
         return counter;
     }
 
-    public static Entity newKickerBumper(double x, double y, double radius) {
+    public static Entity newKickerBumper(double x, double y, double radius, KickerBumper owner) {
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.STATIC);
         physics.setFixtureDef(
@@ -122,11 +128,11 @@ public class GameEntityFactory implements EntityFactory {
                 .type(Types.KICKER_BUMPER)
                 .bbox(new HitBox("KickerBumper", BoundingShape.circle(radius)))
                 .viewFromNode(new Circle(radius, Color.PURPLE))
-                .with(physics, new CollidableComponent(true))
+                .with(physics, new CollidableComponent(true), new HittableComponent(owner))
                 .build();
     }
 
-    public static Entity newPopBumper(double x, double y, double radius) {
+    public static Entity newPopBumper(double x, double y, double radius, PopBumper owner) {
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.STATIC);
         physics.setFixtureDef(
@@ -139,11 +145,11 @@ public class GameEntityFactory implements EntityFactory {
                 .type(Types.POP_BUMPER)
                 .bbox(new HitBox("PopBumper", BoundingShape.circle(radius)))
                 .viewFromNode(new Circle(radius, Color.ORANGE))
-                .with(physics, new CollidableComponent(true))
+                .with(physics, new CollidableComponent(true), new HittableComponent(owner))
                 .build();
     }
 
-    public static Entity newDropTarget(double x, double y, double size) {
+    public static Entity newDropTarget(double x, double y, double size, DropTarget owner) {
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.STATIC);
         physics.setFixtureDef(
@@ -156,11 +162,11 @@ public class GameEntityFactory implements EntityFactory {
                 .type(Types.DROP_TARGET)
                 .bbox(new HitBox("DropTarget", BoundingShape.box(size, size)))
                 .viewFromNode(new Rectangle(size, size, Color.DARKSEAGREEN))
-                .with(physics, new CollidableComponent(true))
+                .with(physics, new CollidableComponent(true), new HittableComponent(owner))
                 .build();
     }
 
-    public static Entity newSpotTarget(double x, double y, double size) {
+    public static Entity newSpotTarget(double x, double y, double size, SpotTarget owner) {
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.STATIC);
         physics.setFixtureDef(
@@ -173,7 +179,7 @@ public class GameEntityFactory implements EntityFactory {
                 .type(Types.SPOT_TARGET)
                 .bbox(new HitBox("SpotTarget", BoundingShape.box(size, size)))
                 .viewFromNode(new Rectangle(size, size, Color.DARKRED))
-                .with(physics, new CollidableComponent(true))
+                .with(physics, new CollidableComponent(true), new HittableComponent(owner))
                 .build();
     }
 
