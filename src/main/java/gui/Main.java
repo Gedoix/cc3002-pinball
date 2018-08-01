@@ -37,8 +37,11 @@ import java.util.Random;
 public class Main extends GameApplication {
 
     public enum Types {
+        BACKGROUND,
         BALL,
         WALL,
+        SCORE_COUNTER,
+        BALLS_COUNTER,
         KICKER_BUMPER,
         POP_BUMPER,
         DROP_TARGET,
@@ -128,7 +131,8 @@ public class Main extends GameApplication {
     protected void onPostUpdate(double tpf) {}
 
     private void resetAllEntitiesAndGame() {
-        getGameWorld().removeEntities(getGameWorld().getEntities());
+        List<Entity> old_entities = (List<Entity>) getGameWorld().getEntities().clone();
+        getGameWorld().removeEntities(old_entities);
 
         pinball.setTable(pinball.createRandomTable("Game", 10, 0.5, 5, 5));
 

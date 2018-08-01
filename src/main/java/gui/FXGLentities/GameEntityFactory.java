@@ -38,6 +38,7 @@ public class GameEntityFactory implements EntityFactory {
         double w = (double) FXGL.getSettings().getWidth();
         double h = (double) FXGL.getSettings().getHeight();
         return Entities.builder()
+                .type(Types.BACKGROUND)
                 .viewFromNode(new Rectangle(w, h, Color.BLACK))
                 .renderLayer(RenderLayer.BACKGROUND)
                 .build();
@@ -100,6 +101,7 @@ public class GameEntityFactory implements EntityFactory {
         double y = 100;
         Entity counter = Entities.builder()
                 .at(x, y)
+                .type(Types.SCORE_COUNTER)
                 .build();
         counter.addComponent(new DefaultStateComponent(new ScoreCounterUpdatingState(counter, game)));
         return counter;
@@ -110,6 +112,7 @@ public class GameEntityFactory implements EntityFactory {
         double y = 200;
         Entity counter = Entities.builder()
                 .at(x, y)
+                .type(Types.BALLS_COUNTER)
                 .build();
         counter.addComponent(new DefaultStateComponent(new BallCounterUpdatingState(counter, game)));
         return counter;
