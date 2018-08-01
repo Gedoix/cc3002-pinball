@@ -2,18 +2,24 @@ package gui;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.audio.Music;
+import com.almasb.fxgl.audio.Sound;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.settings.GameSettings;
 import controller.Game;
+import gui.FXGLentities.Events.HitEvent;
+import gui.FXGLentities.Events.NewGameEvent;
 import gui.FXGLentities.States.DefaultStateComponent;
 import gui.FXGLentities.States.FlipperStates.LeftFlipperActiveState;
 import gui.FXGLentities.States.FlipperStates.LeftFlipperInactiveState;
 import gui.FXGLentities.States.FlipperStates.RightFlipperActiveState;
 import gui.FXGLentities.States.FlipperStates.RightFlipperInactiveState;
 import gui.FXGLentities.GameEntityFactory;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.scene.input.KeyCode;
 
 import java.util.LinkedList;
@@ -35,6 +41,11 @@ public class Main extends GameApplication {
 
     private Game pinball = new Game();
 
+    private boolean mute = true;
+
+    private Music background_song = getAssetLoader().loadMusic("bensound-thelounge.mp3");
+    //private Sound hit_sound = getAssetLoader().loadSound();
+
     @Override
     protected void initSettings(GameSettings gameSettings) {
         gameSettings.setWidth(800);
@@ -53,13 +64,17 @@ public class Main extends GameApplication {
 
         input.addAction(MakeBallAction, KeyCode.SPACE);
 
+        input.addAction(NewTableAction, KeyCode.N);
+
     }
 
     @Override
     protected void preInit() {}
 
     @Override
-    protected void initGameVars(Map<String, Object> vars) {}
+    protected void initGameVars(Map<String, Object> vars) {
+        this.
+    }
 
     @Override
     protected void initGame() {
@@ -86,9 +101,23 @@ public class Main extends GameApplication {
             getGameWorld().addEntity(entity);
         }
 
-        Music song = getAssetLoader().loadMusic("bensound-thelounge.mp3");
-        getAudioPlayer().setGlobalMusicVolume(0.1);
-        getAudioPlayer().playMusic(song);
+        getEventBus().addEventHandler(NewGameEvent.DEFAULT, TableReset);
+        getEventBus().addEventHandler(HitEvent.HITTABLE, HittableHit);
+        getEventBus().addEventHandler(HitEvent.BUMPER, BumperHit);
+        getEventBus().addEventHandler(HitEvent.TARGET, TargetHit);
+        getEventBus().addEventHandler(HitEvent.KICKER_BUMPER, KickerBumperHit);
+        getEventBus().addEventHandler(HitEvent.POP_BUMPER, PopBumperHit);
+        getEventBus().addEventHandler(HitEvent.SPOT_TARGET, SpotTargetHit);
+        getEventBus().addEventHandler(HitEvent.DROP_TARGET, DropTargetHit);
+
+        getEventBus().fireEvent(new NewGameEvent(NewGameEvent.ANY));
+
+        //TODO: Make the music great again
+
+        if (!mute) {
+            getAudioPlayer().setGlobalMusicVolume(0.1);
+            getAudioPlayer().playMusic(background_song);
+        }
 
     }
 
@@ -105,7 +134,9 @@ public class Main extends GameApplication {
     protected void initUI() {}
 
     @Override
-    protected void onUpdate(double tpf) {}
+    protected void onUpdate(double tpf) {
+
+    }
 
     @Override
     protected void onPostUpdate(double tpf) {}
@@ -158,8 +189,48 @@ public class Main extends GameApplication {
 
     };
 
-    //  Factory
+    private UserAction NewTableAction = new UserAction("New Game Table") {
 
+        @Override
+        protected void onActionBegin() {
+            getEventBus().fireEvent(new NewGameEvent(NewGameEvent.DEFAULT));
+        }
+
+    };
+
+    //  Event Handlers
+
+    private EventHandler<NewGameEvent> TableReset = event -> pinball.setTable(pinball.createRandomTable("Game", 2, 0.5, 1, 1));
+
+    //  Hit Event Handlers
+
+    private EventHandler<HitEvent> HittableHit = event -> {
+        Entity hit = event.getHitEntity();
+    };
+
+    private EventHandler<HitEvent> BumperHit = event -> {
+
+    };
+
+    private EventHandler<HitEvent> TargetHit = event -> {
+
+    };
+
+    private EventHandler<HitEvent> KickerBumperHit = event -> {
+
+    };
+
+    private EventHandler<HitEvent> PopBumperHit = event -> {
+
+    };
+
+    private EventHandler<HitEvent> SpotTargetHit = event -> {
+
+    };
+
+    private EventHandler<HitEvent> DropTargetHit = event -> {
+
+    };
 
     //  Collision Handlers
 
@@ -168,6 +239,7 @@ public class Main extends GameApplication {
         @Override
         protected void onCollisionBegin(Entity ball, Entity bumper) {
             super.onCollisionBegin(ball, bumper);
+            getEventBus().fireEvent(new HitEvent(HitEvent.KICKER_BUMPER, bumper));
         }
 
         @Override
@@ -187,6 +259,7 @@ public class Main extends GameApplication {
         @Override
         protected void onCollisionBegin(Entity ball, Entity bumper) {
             super.onCollisionBegin(ball, bumper);
+            getEventBus().fireEvent(new HitEvent(HitEvent.POP_BUMPER, bumper));
         }
 
         @Override
@@ -206,6 +279,7 @@ public class Main extends GameApplication {
         @Override
         protected void onCollisionBegin(Entity ball, Entity target) {
             super.onCollisionBegin(ball, target);
+            getEventBus().fireEvent(new HitEvent(HitEvent.SPOT_TARGET, target));
         }
 
         @Override
@@ -225,6 +299,7 @@ public class Main extends GameApplication {
         @Override
         protected void onCollisionBegin(Entity ball, Entity target) {
             super.onCollisionBegin(ball, target);
+            getEventBus().fireEvent(new HitEvent(HitEvent.DROP_TARGET, target));
         }
 
         @Override
