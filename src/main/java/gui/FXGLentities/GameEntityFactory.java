@@ -26,7 +26,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import logic.gameelements.Hittable;
 import logic.gameelements.bumper.KickerBumper;
 import logic.gameelements.bumper.PopBumper;
 import logic.gameelements.target.DropTarget;
