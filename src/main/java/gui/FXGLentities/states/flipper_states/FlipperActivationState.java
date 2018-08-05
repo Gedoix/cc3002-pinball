@@ -1,10 +1,10 @@
-package gui.FXGLentities.States.FlipperStates;
+package gui.FXGLentities.states.flipper_states;
 
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.RotationComponent;
 import com.almasb.fxgl.extra.entity.state.State;
 import com.almasb.fxgl.physics.PhysicsComponent;
-import gui.FXGLentities.States.StateWithOwner;
+import gui.FXGLentities.states.StateWithOwner;
 
 abstract class FlipperActivationState extends StateWithOwner {
 

@@ -19,6 +19,7 @@ public class DropTargetBonusTest {
 
     @Test
     public void bonusBehaviour() {
+        //TODO: add reset all targets test
         assertEquals(0, game.getScore());
         bonus.trigger(game);
         assertEquals(1000000, game.getScore());

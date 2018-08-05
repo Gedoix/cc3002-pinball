@@ -66,7 +66,7 @@ public class Game {
     //  Constructors
 
     /**
-     * Main constructor method for the class
+     * PinballGameApplication constructor method for the class
      */
     public Game() {
         this(false);
@@ -328,7 +328,7 @@ public class Game {
     //  Update methods for runtime behavior, currently unused, but will be implemented along with the game view
 
     /**
-     * Main update method for the game, to be used once every frame.
+     * PinballGameApplication update method for the game, to be used once every frame.
      *
      * Should take into account positioning of the ball and all objects within the table
      * and call the {@link #hit(Hittable)} method accordingly.

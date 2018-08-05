@@ -1,4 +1,4 @@
-package gui.FXGLentities.States;
+package gui.FXGLentities.states;
 
 import com.almasb.fxgl.entity.Entity;
 import controller.Game;

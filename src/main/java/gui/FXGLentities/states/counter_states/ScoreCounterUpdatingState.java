@@ -1,9 +1,9 @@
-package gui.FXGLentities.States.CounterStates;
+package gui.FXGLentities.states.counter_states;
 
 import com.almasb.fxgl.entity.Entity;
 import controller.Game;
-import gui.FXGLentities.States.StateWithGameAndOwner;
-import gui.FXGLentities.GameEntityFactory;
+import gui.FXGLentities.states.StateWithGameAndOwner;
+import gui.FXGLentities.PinballEntityFactory;
 
 public class ScoreCounterUpdatingState extends StateWithGameAndOwner {
 
@@ -13,6 +13,6 @@ public class ScoreCounterUpdatingState extends StateWithGameAndOwner {
 
     @Override
     protected void onUpdate(double v) {
-        owner.setView(GameEntityFactory.newWhiteText("Score: "+String.valueOf(game_instance.getScore())));
+        owner.setView(PinballEntityFactory.newWhiteText("Score: "+String.valueOf(game_instance.getScore())));
     }
 }

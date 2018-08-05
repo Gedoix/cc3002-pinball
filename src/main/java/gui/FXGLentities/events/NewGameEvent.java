@@ -1,6 +1,5 @@
-package gui.FXGLentities.Events;
+package gui.FXGLentities.events;
 
-import controller.Game;
 import javafx.event.Event;
 import javafx.event.EventType;
 

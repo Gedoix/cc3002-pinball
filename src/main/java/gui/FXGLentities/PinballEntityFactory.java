@@ -1,13 +1,13 @@
 package gui.FXGLentities;
 
 import controller.Game;
-import gui.FXGLentities.Components.HittableComponent;
-import gui.FXGLentities.States.CounterStates.BallCounterUpdatingState;
-import gui.FXGLentities.States.CounterStates.ScoreCounterUpdatingState;
-import gui.FXGLentities.States.DefaultStateComponent;
-import gui.FXGLentities.States.FlipperStates.LeftFlipperInactiveState;
-import gui.FXGLentities.States.FlipperStates.RightFlipperInactiveState;
-import gui.Main.Types;
+import gui.FXGLentities.components.HittableComponent;
+import gui.FXGLentities.states.counter_states.BallCounterUpdatingState;
+import gui.FXGLentities.states.counter_states.ScoreCounterUpdatingState;
+import gui.FXGLentities.states.DefaultStateComponent;
+import gui.FXGLentities.states.flipper_states.LeftFlipperInactiveState;
+import gui.FXGLentities.states.flipper_states.RightFlipperInactiveState;
+import gui.PinballGameApplication.Types;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
@@ -31,7 +31,7 @@ import logic.gameelements.bumper.PopBumper;
 import logic.gameelements.target.DropTarget;
 import logic.gameelements.target.SpotTarget;
 
-public class GameEntityFactory implements EntityFactory {
+public class PinballEntityFactory implements EntityFactory {
 
     public static Entity newBackground() {
         double w = (double) FXGL.getSettings().getWidth();
@@ -55,6 +55,18 @@ public class GameEntityFactory implements EntityFactory {
                 .bbox(new HitBox("LEFT", new Point2D(-thickness, 0.0D), BoundingShape.box(thickness, h)))
                 .bbox(new HitBox("RIGHT", new Point2D(w, 0.0D), BoundingShape.box(thickness, h)))
                 .bbox(new HitBox("TOP", new Point2D(0.0D, -thickness), BoundingShape.box(w, thickness)))
+                .with(new PhysicsComponent(), new CollidableComponent(true))
+                .build();
+    }
+
+    public static Entity newBottomWall() {
+        double w = (FXGL.getSettings().getWidth() * 0.5);
+        double h = (double) FXGL.getSettings().getHeight();
+        double thickness = 100;
+        return Entities.builder()
+                .at((FXGL.getSettings().getWidth() * 0.25), 0)
+                .renderLayer(RenderLayer.BACKGROUND)
+                .type(Types.BOTTOM_WALL)
                 .bbox(new HitBox("BOTTOM", new Point2D(0.0D, h), BoundingShape.box(w, thickness)))
                 .with(new PhysicsComponent(), new CollidableComponent(true))
                 .build();
@@ -220,6 +232,7 @@ public class GameEntityFactory implements EntityFactory {
     public static Entity newLeftFlipper() {
         double x = 300;
         double y = 500;
+        //  Physics
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.KINEMATIC);
         physics.setFixtureDef(
@@ -228,6 +241,7 @@ public class GameEntityFactory implements EntityFactory {
                         .density(flipper_density)
                         .friction(flipper_friction)
         );
+        //  Node
         Arc arc = new Arc();
         arc.setCenterX(flipper_width);
         arc.setCenterY(flipper_height /2);
@@ -237,12 +251,22 @@ public class GameEntityFactory implements EntityFactory {
         arc.setLength(90.0f);
         arc.setType(ArcType.ROUND);
         arc.setFill(Color.BLUE);
+        //  HitBox
+        HitBox box = new HitBox(BoundingShape.polygon(
+                new Point2D(flipper_width, flipper_height /2),
+                new Point2D(flipper_width*0.25, flipper_height),
+                new Point2D(0, flipper_height /2),
+                new Point2D(flipper_width*0.25, 0)));
+        //  Entity
         Entity flipper = Entities.builder()
                 .at(x- flipper_width /2, y- flipper_height /2)
                 .type(Types.LEFT_FLIPPER)
-                .viewFromNodeWithBBox(arc)
+                .viewFromNode(arc)
+                .bbox(box)
                 .with(physics, new CollidableComponent(true))
+                .rotate(20)
                 .build();
+        //  State
         StateComponent states = new DefaultStateComponent(new LeftFlipperInactiveState(flipper));
         flipper.addComponent(states);
         return flipper;
@@ -251,6 +275,7 @@ public class GameEntityFactory implements EntityFactory {
     public static Entity newRightFlipper() {
         double x = 500;
         double y = 500;
+        //  Physics
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.KINEMATIC);
         physics.setFixtureDef(
@@ -259,6 +284,7 @@ public class GameEntityFactory implements EntityFactory {
                         .density(flipper_density)
                         .friction(flipper_friction)
         );
+        //  Node
         Arc arc = new Arc();
         arc.setCenterX(0.0f);
         arc.setCenterY(flipper_height /2);
@@ -268,12 +294,22 @@ public class GameEntityFactory implements EntityFactory {
         arc.setLength(90.0f);
         arc.setType(ArcType.ROUND);
         arc.setFill(Color.BLUE);
+        //  HitBox
+        HitBox box = new HitBox(BoundingShape.polygon(
+                new Point2D(0, flipper_height /2),
+                new Point2D(flipper_width*0.75, flipper_height),
+                new Point2D(flipper_width, flipper_height /2),
+                new Point2D(flipper_width*0.75, 0)));
+        //  Entity
         Entity flipper = Entities.builder()
                 .at(x- flipper_width /2, y- flipper_height /2)
                 .type(Types.RIGHT_FLIPPER)
-                .viewFromNodeWithBBox(arc)
+                .viewFromNode(arc)
+                .bbox(box)
                 .with(physics, new CollidableComponent(true))
+                .rotate(-20)
                 .build();
+        //  State
         StateComponent states = new DefaultStateComponent(new RightFlipperInactiveState(flipper));
         flipper.addComponent(states);
         return flipper;

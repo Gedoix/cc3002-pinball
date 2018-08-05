@@ -8,15 +8,15 @@ import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.settings.GameSettings;
 import controller.Game;
-import gui.FXGLentities.Components.HittableComponent;
-import gui.FXGLentities.Events.HitEvent;
-import gui.FXGLentities.Events.NewGameEvent;
-import gui.FXGLentities.GameEntityFactory;
-import gui.FXGLentities.States.DefaultStateComponent;
-import gui.FXGLentities.States.FlipperStates.LeftFlipperActiveState;
-import gui.FXGLentities.States.FlipperStates.LeftFlipperInactiveState;
-import gui.FXGLentities.States.FlipperStates.RightFlipperActiveState;
-import gui.FXGLentities.States.FlipperStates.RightFlipperInactiveState;
+import gui.FXGLentities.components.HittableComponent;
+import gui.FXGLentities.events.HitEvent;
+import gui.FXGLentities.events.NewGameEvent;
+import gui.FXGLentities.PinballEntityFactory;
+import gui.FXGLentities.states.DefaultStateComponent;
+import gui.FXGLentities.states.flipper_states.LeftFlipperActiveState;
+import gui.FXGLentities.states.flipper_states.LeftFlipperInactiveState;
+import gui.FXGLentities.states.flipper_states.RightFlipperActiveState;
+import gui.FXGLentities.states.flipper_states.RightFlipperInactiveState;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
@@ -34,12 +34,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class Main extends GameApplication {
+public class PinballGameApplication extends GameApplication {
 
     public enum Types {
         BACKGROUND,
         BALL,
         WALL,
+        BOTTOM_WALL,
         SCORE_COUNTER,
         BALLS_COUNTER,
         KICKER_BUMPER,
@@ -52,9 +53,10 @@ public class Main extends GameApplication {
 
     private Game pinball = new Game();
 
-    private Random randomizer = new Random();
+    private Random randomized = new Random();
 
-    private boolean mute = true;
+    private boolean mute = false;
+    private double volume = 0.6;
 
     private Music background_song = getAssetLoader().loadMusic("bensound-thelounge.mp3");
     //private Sound hit_sound = getAssetLoader().loadSound();
@@ -104,7 +106,7 @@ public class Main extends GameApplication {
         resetAllEntitiesAndGame();
 
         if (!mute) {
-            getAudioPlayer().setGlobalMusicVolume(0.1);
+            getAudioPlayer().setGlobalMusicVolume(volume);
             getAudioPlayer().playMusic(background_song);
         }
 
@@ -117,6 +119,7 @@ public class Main extends GameApplication {
         getPhysicsWorld().addCollisionHandler(PopBumperCollisionHandler);
         getPhysicsWorld().addCollisionHandler(SpotTargetCollisionHandler);
         getPhysicsWorld().addCollisionHandler(DropTargetCollisionHandler);
+        getPhysicsWorld().addCollisionHandler(BottomWallCollisionHandler);
     }
 
     @Override
@@ -131,42 +134,44 @@ public class Main extends GameApplication {
     protected void onPostUpdate(double tpf) {}
 
     private void resetAllEntitiesAndGame() {
-        List<Entity> old_entities = (List<Entity>) getGameWorld().getEntities().clone();
+        List<Entity> old_entities = new LinkedList<>(getGameWorld().getEntities());
         getGameWorld().removeEntities(old_entities);
 
+        pinball = new Game();
         pinball.setTable(pinball.createRandomTable("Game", 10, 0.5, 5, 5));
 
         List<Entity> entities = new LinkedList<>();
 
-        entities.add(GameEntityFactory.newBackground());
-        entities.add(GameEntityFactory.newTableWall());
-        entities.add(GameEntityFactory.newTopLeftWall());
-        entities.add(GameEntityFactory.newTopRightWall());
-        entities.add(GameEntityFactory.newScoreCounter(pinball));
-        entities.add(GameEntityFactory.newBallCounter(pinball));
+        entities.add(PinballEntityFactory.newBackground());
+        entities.add(PinballEntityFactory.newTableWall());
+        entities.add(PinballEntityFactory.newBottomWall());
+        entities.add(PinballEntityFactory.newTopLeftWall());
+        entities.add(PinballEntityFactory.newTopRightWall());
+        entities.add(PinballEntityFactory.newScoreCounter(pinball));
+        entities.add(PinballEntityFactory.newBallCounter(pinball));
 
         for (Bumper bumper :
                 pinball.getBumpers()) {
             if (bumper.getClass() == KickerBumper.class) {
-                entities.add(GameEntityFactory.newKickerBumper(250+randomizer.nextInt(300), 50+randomizer.nextInt(350), 5, (KickerBumper) bumper));
+                entities.add(PinballEntityFactory.newKickerBumper(250+ randomized.nextInt(300), 50+ randomized.nextInt(350), 5, (KickerBumper) bumper));
             }
             else {
-                entities.add(GameEntityFactory.newPopBumper(250+randomizer.nextInt(300), 50+randomizer.nextInt(350), 5, (PopBumper) bumper));
+                entities.add(PinballEntityFactory.newPopBumper(250+ randomized.nextInt(300), 50+ randomized.nextInt(350), 5, (PopBumper) bumper));
             }
         }
 
         for (Target target :
                 pinball.getTargets()) {
             if (target.getClass() == SpotTarget.class) {
-                entities.add(GameEntityFactory.newSpotTarget(250+randomizer.nextInt(300), 50+randomizer.nextInt(350), 10, (SpotTarget) target));
+                entities.add(PinballEntityFactory.newSpotTarget(250+ randomized.nextInt(300), 50+ randomized.nextInt(350), 10, (SpotTarget) target));
             }
             else {
-                entities.add(GameEntityFactory.newDropTarget(250+randomizer.nextInt(300), 50+randomizer.nextInt(350), 10, (DropTarget) target));
+                entities.add(PinballEntityFactory.newDropTarget(250+ randomized.nextInt(300), 50+ randomized.nextInt(350), 10, (DropTarget) target));
             }
         }
-        entities.add(GameEntityFactory.newBall());
-        entities.add(GameEntityFactory.newLeftFlipper());
-        entities.add(GameEntityFactory.newRightFlipper());
+        entities.add(PinballEntityFactory.newBall());
+        entities.add(PinballEntityFactory.newLeftFlipper());
+        entities.add(PinballEntityFactory.newRightFlipper());
 
         for (Entity entity :
                 entities) {
@@ -221,9 +226,11 @@ public class Main extends GameApplication {
     private UserAction MakeBallAction = new UserAction("Make Ball") {
 
         @Override
-        protected void onAction() {
-            Entity ball = GameEntityFactory.newBall();
-            getGameWorld().addEntity(ball);
+        protected void onActionBegin() {
+            if (getGameWorld().getEntitiesByType(Types.BALL).isEmpty()) {
+                Entity ball = PinballEntityFactory.newBall();
+                getGameWorld().addEntity(ball);
+            }
         }
 
     };
@@ -283,18 +290,15 @@ public class Main extends GameApplication {
 
         @Override
         protected void onCollisionBegin(Entity ball, Entity bumper) {
-            super.onCollisionBegin(ball, bumper);
             getEventBus().fireEvent(new HitEvent(HitEvent.KICKER_BUMPER, bumper));
         }
 
         @Override
         protected void onCollision(Entity ball, Entity bumper) {
-            super.onCollision(ball, bumper);
         }
 
         @Override
         protected void onCollisionEnd(Entity ball, Entity bumper) {
-            super.onCollisionEnd(ball, bumper);
         }
 
     };
@@ -303,18 +307,15 @@ public class Main extends GameApplication {
 
         @Override
         protected void onCollisionBegin(Entity ball, Entity bumper) {
-            super.onCollisionBegin(ball, bumper);
             getEventBus().fireEvent(new HitEvent(HitEvent.POP_BUMPER, bumper));
         }
 
         @Override
         protected void onCollision(Entity ball, Entity bumper) {
-            super.onCollision(ball, bumper);
         }
 
         @Override
         protected void onCollisionEnd(Entity ball, Entity bumper) {
-            super.onCollisionEnd(ball, bumper);
         }
 
     };
@@ -323,18 +324,15 @@ public class Main extends GameApplication {
 
         @Override
         protected void onCollisionBegin(Entity ball, Entity target) {
-            super.onCollisionBegin(ball, target);
             getEventBus().fireEvent(new HitEvent(HitEvent.SPOT_TARGET, target));
         }
 
         @Override
         protected void onCollision(Entity ball, Entity target) {
-            super.onCollision(ball, target);
         }
 
         @Override
         protected void onCollisionEnd(Entity ball, Entity target) {
-            super.onCollisionEnd(ball, target);
         }
 
     };
@@ -343,18 +341,24 @@ public class Main extends GameApplication {
 
         @Override
         protected void onCollisionBegin(Entity ball, Entity target) {
-            super.onCollisionBegin(ball, target);
             getEventBus().fireEvent(new HitEvent(HitEvent.DROP_TARGET, target));
         }
 
         @Override
         protected void onCollision(Entity ball, Entity target) {
-            super.onCollision(ball, target);
         }
 
         @Override
         protected void onCollisionEnd(Entity ball, Entity target) {
-            super.onCollisionEnd(ball, target);
+        }
+
+    };
+
+    private CollisionHandler BottomWallCollisionHandler = new CollisionHandler(Types.BALL, Types.BOTTOM_WALL) {
+
+        @Override
+        protected void onCollisionBegin(Entity ball, Entity wall) {
+            getGameWorld().removeEntity(ball);
         }
 
     };

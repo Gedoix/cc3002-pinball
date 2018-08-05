@@ -1,4 +1,4 @@
-package gui.FXGLentities.Events;
+package gui.FXGLentities.events;
 
 import com.almasb.fxgl.entity.Entity;
 import javafx.event.Event;

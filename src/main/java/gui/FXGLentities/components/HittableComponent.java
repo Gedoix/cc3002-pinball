@@ -1,4 +1,4 @@
-package gui.FXGLentities.Components;
+package gui.FXGLentities.components;
 
 import com.almasb.fxgl.entity.component.Component;
 import logic.gameelements.Hittable;

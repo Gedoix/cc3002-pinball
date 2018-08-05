@@ -1,4 +1,4 @@
-package gui.FXGLentities.States.FlipperStates;
+package gui.FXGLentities.states.flipper_states;
 
 import com.almasb.fxgl.entity.Entity;
 
