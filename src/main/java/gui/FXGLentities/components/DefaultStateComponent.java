@@ -1,4 +1,4 @@
-package gui.FXGLentities.states;
+package gui.FXGLentities.components;
 
 import com.almasb.fxgl.extra.entity.state.State;
 import com.almasb.fxgl.extra.entity.state.StateComponent;

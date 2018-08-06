@@ -338,9 +338,6 @@ public class Game {
                 current_table.getNumberOfDropTargets() - current_table.getCurrentlyDroppedDropTargets() == 0) {
             this.triggerDropTargetBonus();
         }
-        //  if(...) {
-        //      this.hit(getTable().getBumpers()[i])
-        //  }
     }
 
     /**

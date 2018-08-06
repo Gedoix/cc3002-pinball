@@ -6,22 +6,27 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
+import com.almasb.fxgl.physics.PhysicsComponent;
+import com.almasb.fxgl.physics.box2d.dynamics.Body;
 import com.almasb.fxgl.settings.GameSettings;
 import controller.Game;
+import gui.FXGLentities.PinballEntityFactory;
+import gui.FXGLentities.components.DefaultStateComponent;
 import gui.FXGLentities.components.HittableComponent;
 import gui.FXGLentities.events.HitEvent;
 import gui.FXGLentities.events.NewGameEvent;
-import gui.FXGLentities.PinballEntityFactory;
-import gui.FXGLentities.states.DefaultStateComponent;
 import gui.FXGLentities.states.flipper_states.LeftFlipperActiveState;
 import gui.FXGLentities.states.flipper_states.LeftFlipperInactiveState;
 import gui.FXGLentities.states.flipper_states.RightFlipperActiveState;
 import gui.FXGLentities.states.flipper_states.RightFlipperInactiveState;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Shape;
+import javafx.util.Duration;
 import logic.gameelements.bumper.Bumper;
 import logic.gameelements.bumper.KickerBumper;
 import logic.gameelements.bumper.PopBumper;
@@ -34,8 +39,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static gui.FXGLentities.PinballEntityFactory.newSparksParticleMaker;
+
+/**
+ * Main class for handling game gui and interactions among elements.
+ *
+ * @author Diego Ortego Prieto
+ *
+ * @see com.almasb.fxgl.app.GameApplication
+ * @see javafx.application.Application
+ *
+ * @see Game
+ */
 public class PinballGameApplication extends GameApplication {
 
+    //  Enum types
+
+    /**
+     * Entity dynamic types for collision detection.
+     */
     public enum Types {
         BACKGROUND,
         BALL,
@@ -48,19 +70,50 @@ public class PinballGameApplication extends GameApplication {
         DROP_TARGET,
         SPOT_TARGET,
         LEFT_FLIPPER,
-        RIGHT_FLIPPER
+        RIGHT_FLIPPER,
+        PARTICLE_EMITTER
     }
 
+    //  Instancing reusable objects
+
+    /**
+     * Instance of main game controller.
+     *
+     * Keeps score and ball counters, along with individual Hittable behaviour.
+     */
     private Game pinball = new Game();
 
-    private Random randomized = new Random();
+    /**
+     * Randomizer for Hittable placement at game start.
+     */
+    private Random randomizer = new Random();
 
+    /**
+     * For removing game audio.
+     */
     private boolean mute = false;
-    private double volume = 0.6;
 
+    /**
+     * Background music for the game.
+     *
+     * Loaded from resources/assets/music/
+     */
     private Music background_song = getAssetLoader().loadMusic("bensound-thelounge.mp3");
-    //private Sound hit_sound = getAssetLoader().loadSound();
 
+    /**
+     * PNG image for generating star particle effects.
+     *
+     * Loaded from resources/assets/textures/
+     */
+    private Image star = getAssetLoader().loadImage("Star.png");
+
+    //  Overridden methods
+
+    /**
+     * Sets up window margins, window title and game version before anything else.
+     *
+     * @param gameSettings  Handy package containing desired settings, will be ignored.
+     */
     @Override
     protected void initSettings(GameSettings gameSettings) {
         gameSettings.setWidth(800);
@@ -69,6 +122,9 @@ public class PinballGameApplication extends GameApplication {
         gameSettings.setVersion("Pre-Alpha");
     }
 
+    /**
+     * Sets up input key to action assignment allowing most interactions.
+     */
     @Override
     protected void initInput() {
         Input input = getInput();
@@ -80,17 +136,13 @@ public class PinballGameApplication extends GameApplication {
         input.addAction(MakeBallAction, KeyCode.SPACE);
 
         input.addAction(NewTableAction, KeyCode.N);
-
     }
 
-    @Override
-    protected void preInit() {}
-
-    @Override
-    protected void initGameVars(Map<String, Object> vars) {
-
-    }
-
+    /**
+     * Sets up event handlers and calls {@link #resetAllEntitiesAndGame()} to generate the playing board.
+     *
+     * Adds music to the audio player and sets the global play volume.
+     */
     @Override
     protected void initGame() {
 
@@ -106,12 +158,16 @@ public class PinballGameApplication extends GameApplication {
         resetAllEntitiesAndGame();
 
         if (!mute) {
+            double volume = 0.6;
             getAudioPlayer().setGlobalMusicVolume(volume);
             getAudioPlayer().playMusic(background_song);
         }
 
     }
 
+    /**
+     * Sets up collision handlers and configures gravity.
+     */
     @Override
     protected void initPhysics() {
         getPhysicsWorld().setGravity(0.0, 150.0);
@@ -122,17 +178,31 @@ public class PinballGameApplication extends GameApplication {
         getPhysicsWorld().addCollisionHandler(BottomWallCollisionHandler);
     }
 
-    @Override
-    protected void initUI() {}
-
+    /**
+     * Makes sure Game triggers DropTargetBonus at the appropriate time.
+     *
+     * @param tpf   Unnecessary parameter inherited from superclass.
+     */
     @Override
     protected void onUpdate(double tpf) {
         pinball.update();
     }
 
-    @Override
-    protected void onPostUpdate(double tpf) {}
+    //  Private complex behaviours
 
+    /**
+     * Removes all entities from the app.
+     *
+     * Resets the Game instance.
+     *
+     * Adds all the entities necessary for a functioning board.
+     *
+     * Adds all Hittable entities.
+     *
+     * Adds a starting ball, and flippers.
+     *
+     * Restarts background music.
+     */
     private void resetAllEntitiesAndGame() {
         List<Entity> old_entities = new LinkedList<>(getGameWorld().getEntities());
         getGameWorld().removeEntities(old_entities);
@@ -150,23 +220,25 @@ public class PinballGameApplication extends GameApplication {
         entities.add(PinballEntityFactory.newScoreCounter(pinball));
         entities.add(PinballEntityFactory.newBallCounter(pinball));
 
+        double hittable_size = 10;
+
         for (Bumper bumper :
                 pinball.getBumpers()) {
             if (bumper.getClass() == KickerBumper.class) {
-                entities.add(PinballEntityFactory.newKickerBumper(250+ randomized.nextInt(300), 50+ randomized.nextInt(350), 5, (KickerBumper) bumper));
+                entities.add(PinballEntityFactory.newKickerBumper(250+ randomizer.nextInt(300), 50+ randomizer.nextInt(350), hittable_size, (KickerBumper) bumper));
             }
             else {
-                entities.add(PinballEntityFactory.newPopBumper(250+ randomized.nextInt(300), 50+ randomized.nextInt(350), 5, (PopBumper) bumper));
+                entities.add(PinballEntityFactory.newPopBumper(250+ randomizer.nextInt(300), 50+ randomizer.nextInt(350), hittable_size, (PopBumper) bumper));
             }
         }
 
         for (Target target :
                 pinball.getTargets()) {
             if (target.getClass() == SpotTarget.class) {
-                entities.add(PinballEntityFactory.newSpotTarget(250+ randomized.nextInt(300), 50+ randomized.nextInt(350), 10, (SpotTarget) target));
+                entities.add(PinballEntityFactory.newSpotTarget(250+ randomizer.nextInt(300), 50+ randomizer.nextInt(350), hittable_size, (SpotTarget) target));
             }
             else {
-                entities.add(PinballEntityFactory.newDropTarget(250+ randomized.nextInt(300), 50+ randomized.nextInt(350), 10, (DropTarget) target));
+                entities.add(PinballEntityFactory.newDropTarget(250+ randomizer.nextInt(300), 50+ randomizer.nextInt(350), hittable_size, (DropTarget) target));
             }
         }
         entities.add(PinballEntityFactory.newBall());
@@ -185,20 +257,36 @@ public class PinballGameApplication extends GameApplication {
 
     }
 
+    //  Reach
+
+    /**
+     * Ensures the class can be launched from the outside.
+     *
+     * @param args  Should be left empty.
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
     //  Actions
 
+    /**
+     * Activates and de-activates the left flipper, allowing for smooth movement.
+     */
     private UserAction ActivateLeftFlipperAction = new UserAction("Activate Left Flipper") {
 
+        /**
+         * Sets flipper state to active.
+         */
         @Override
         protected void onActionBegin() {
             getGameWorld().getEntitiesByType(Types.LEFT_FLIPPER)
                     .forEach(e -> e.getComponent(DefaultStateComponent.class).setState(new LeftFlipperActiveState(e)));
         }
 
+        /**
+         * Sets flipper state to inactive.
+         */
         @Override
         protected void onActionEnd() {
             getGameWorld().getEntitiesByType(Types.LEFT_FLIPPER)
@@ -207,14 +295,23 @@ public class PinballGameApplication extends GameApplication {
 
     };
 
+    /**
+     * Activates and de-activates the right flipper, allowing for smooth movement.
+     */
     private UserAction ActivateRightFlipperAction = new UserAction("Activate Right Flipper") {
 
+        /**
+         * Sets flipper state to active.
+         */
         @Override
         protected void onActionBegin() {
             getGameWorld().getEntitiesByType(Types.RIGHT_FLIPPER)
                     .forEach(e -> e.getComponent(DefaultStateComponent.class).setState(new RightFlipperActiveState(e)));
         }
 
+        /**
+         * Sets flipper state to inactive.
+         */
         @Override
         protected void onActionEnd() {
             getGameWorld().getEntitiesByType(Types.RIGHT_FLIPPER)
@@ -223,18 +320,25 @@ public class PinballGameApplication extends GameApplication {
 
     };
 
+    /**
+     * Generates a new ball if there's none already on screen, and if the ball counter allows it.
+     */
     private UserAction MakeBallAction = new UserAction("Make Ball") {
 
         @Override
         protected void onActionBegin() {
-            if (getGameWorld().getEntitiesByType(Types.BALL).isEmpty()) {
+            if (getGameWorld().getEntitiesByType(Types.BALL).isEmpty() && pinball.getBallCounter() != 0) {
                 Entity ball = PinballEntityFactory.newBall();
                 getGameWorld().addEntity(ball);
+                pinball.removeBall();
             }
         }
 
     };
 
+    /**
+     * Calls {@link #resetAllEntitiesAndGame()} to reset all.
+     */
     private UserAction NewTableAction = new UserAction("New Game Table") {
 
         @Override
@@ -246,6 +350,9 @@ public class PinballGameApplication extends GameApplication {
 
     //  Event Handlers
 
+    /**
+     * Event wrapping {@link #resetAllEntitiesAndGame()} for more widespread use.
+     */
     private EventHandler<NewGameEvent> NewGameEventHandler = event -> resetAllEntitiesAndGame();
 
     //  Hit Event Handlers
@@ -255,13 +362,20 @@ public class PinballGameApplication extends GameApplication {
         for (Node node :
                 hit.getView().getNodes()) {
             Shape shape = (Shape)node;
+            Paint old_paint = shape.getFill();
             shape.setFill(Color.WHITE);
+            getMasterTimer().runOnceAfter(() -> shape.setFill(old_paint), Duration.seconds(0.1));
         }
+        double x = hit.getPosition().getX();
+        double y = hit.getPosition().getY();
+        getGameWorld().addEntity(newSparksParticleMaker(x, y, star));
+
         pinball.hit(hit.getComponent(HittableComponent.class).getHittable());
     };
 
     private EventHandler<HitEvent> BumperHit = event -> {
-
+        Bumper bumper = (Bumper) event.getHitEntity().getComponent(HittableComponent.class).getHittable();
+        getMasterTimer().runOnceAfter(bumper::downgrade, Duration.seconds(10));
     };
 
     private EventHandler<HitEvent> TargetHit = event -> {
@@ -277,11 +391,13 @@ public class PinballGameApplication extends GameApplication {
     };
 
     private EventHandler<HitEvent> SpotTargetHit = event -> {
-
+        SpotTarget target = (SpotTarget) event.getHitEntity().getComponent(HittableComponent.class).getHittable();
+        getMasterTimer().runOnceAfter(target::reset, Duration.seconds(20));
     };
 
     private EventHandler<HitEvent> DropTargetHit = event -> {
-
+        DropTarget target = (DropTarget) event.getHitEntity().getComponent(HittableComponent.class).getHittable();
+        getMasterTimer().runOnceAfter(target::reset, Duration.seconds(120));
     };
 
     //  Collision Handlers
@@ -358,7 +474,13 @@ public class PinballGameApplication extends GameApplication {
 
         @Override
         protected void onCollisionBegin(Entity ball, Entity wall) {
+            Body body = ball.getComponent(PhysicsComponent.class).getBody();
+            ball.removeComponent(PhysicsComponent.class);
+
+            getMasterTimer().runOnceAfter(() -> getPhysicsWorld().getJBox2DWorld().destroyBody(body), Duration.seconds(1));
+
             getGameWorld().removeEntity(ball);
+
         }
 
     };

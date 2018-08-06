@@ -1,13 +1,5 @@
 package gui.FXGLentities;
 
-import controller.Game;
-import gui.FXGLentities.components.HittableComponent;
-import gui.FXGLentities.states.counter_states.BallCounterUpdatingState;
-import gui.FXGLentities.states.counter_states.ScoreCounterUpdatingState;
-import gui.FXGLentities.states.DefaultStateComponent;
-import gui.FXGLentities.states.flipper_states.LeftFlipperInactiveState;
-import gui.FXGLentities.states.flipper_states.RightFlipperInactiveState;
-import gui.PinballGameApplication.Types;
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
@@ -15,13 +7,26 @@ import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.RenderLayer;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.extra.entity.state.StateComponent;
+import com.almasb.fxgl.particle.ParticleComponent;
+import com.almasb.fxgl.particle.ParticleEmitter;
+import com.almasb.fxgl.particle.ParticleEmitters;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
+import controller.Game;
+import gui.FXGLentities.components.DefaultStateComponent;
+import gui.FXGLentities.components.DragComponent;
+import gui.FXGLentities.components.HittableComponent;
+import gui.FXGLentities.states.counter_states.BallCounterUpdatingState;
+import gui.FXGLentities.states.counter_states.ScoreCounterUpdatingState;
+import gui.FXGLentities.states.flipper_states.LeftFlipperInactiveState;
+import gui.FXGLentities.states.flipper_states.RightFlipperInactiveState;
+import gui.PinballGameApplication.Types;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.text.Font;
@@ -129,7 +134,7 @@ public class PinballEntityFactory implements EntityFactory {
         return counter;
     }
 
-    public static Entity newKickerBumper(double x, double y, double radius, KickerBumper owner) {
+    public static Entity newKickerBumper(double x, double y, double diameter, KickerBumper owner) {
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.STATIC);
         physics.setFixtureDef(
@@ -140,13 +145,13 @@ public class PinballEntityFactory implements EntityFactory {
         return Entities.builder()
                 .at(x, y)
                 .type(Types.KICKER_BUMPER)
-                .bbox(new HitBox("KickerBumper", BoundingShape.circle(radius)))
-                .viewFromNode(new Circle(radius, Color.PURPLE))
+                .bbox(new HitBox("KickerBumper", BoundingShape.circle(diameter/2)))
+                .viewFromNode(new Circle(diameter/2, Color.PURPLE))
                 .with(physics, new CollidableComponent(true), new HittableComponent(owner))
                 .build();
     }
 
-    public static Entity newPopBumper(double x, double y, double radius, PopBumper owner) {
+    public static Entity newPopBumper(double x, double y, double diameter, PopBumper owner) {
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.STATIC);
         physics.setFixtureDef(
@@ -157,13 +162,13 @@ public class PinballEntityFactory implements EntityFactory {
         return Entities.builder()
                 .at(x, y)
                 .type(Types.POP_BUMPER)
-                .bbox(new HitBox("PopBumper", BoundingShape.circle(radius)))
-                .viewFromNode(new Circle(radius, Color.ORANGE))
+                .bbox(new HitBox("PopBumper", BoundingShape.circle(diameter/2)))
+                .viewFromNode(new Circle(diameter/2, Color.ORANGE))
                 .with(physics, new CollidableComponent(true), new HittableComponent(owner))
                 .build();
     }
 
-    public static Entity newDropTarget(double x, double y, double size, DropTarget owner) {
+    public static Entity newDropTarget(double x, double y, double side_length, DropTarget owner) {
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.STATIC);
         physics.setFixtureDef(
@@ -174,13 +179,13 @@ public class PinballEntityFactory implements EntityFactory {
         return Entities.builder()
                 .at(x, y)
                 .type(Types.DROP_TARGET)
-                .bbox(new HitBox("DropTarget", BoundingShape.box(size, size)))
-                .viewFromNode(new Rectangle(size, size, Color.DARKSEAGREEN))
+                .bbox(new HitBox("DropTarget", BoundingShape.box(side_length, side_length)))
+                .viewFromNode(new Rectangle(side_length, side_length, Color.DARKSEAGREEN))
                 .with(physics, new CollidableComponent(true), new HittableComponent(owner))
                 .build();
     }
 
-    public static Entity newSpotTarget(double x, double y, double size, SpotTarget owner) {
+    public static Entity newSpotTarget(double x, double y, double side_length, SpotTarget owner) {
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.STATIC);
         physics.setFixtureDef(
@@ -191,8 +196,8 @@ public class PinballEntityFactory implements EntityFactory {
         return Entities.builder()
                 .at(x, y)
                 .type(Types.SPOT_TARGET)
-                .bbox(new HitBox("SpotTarget", BoundingShape.box(size, size)))
-                .viewFromNode(new Rectangle(size, size, Color.DARKRED))
+                .bbox(new HitBox("SpotTarget", BoundingShape.box(side_length, side_length)))
+                .viewFromNode(new Rectangle(side_length, side_length, Color.DARKRED))
                 .with(physics, new CollidableComponent(true), new HittableComponent(owner))
                 .build();
     }
@@ -218,14 +223,42 @@ public class PinballEntityFactory implements EntityFactory {
                 .type(Types.BALL)
                 .bbox(new HitBox("Ball", BoundingShape.circle(10)))
                 .viewFromNode(new Circle(10, Color.RED))
-                .with(physics, new CollidableComponent(true))
+                .with(physics, new CollidableComponent(true), new DragComponent())
                 .build();
 
     }
 
+    public static Entity newSparksParticleMaker(double x, double y) {
+        return newSparksParticleMaker(x, y, null);
+    }
+
+    public static Entity newSparksParticleMaker(double x, double y, Image source) {
+        //  Entity
+        Entity result = Entities.builder()
+                .type(Types.PARTICLE_EMITTER)
+                .build();
+        //  Particle Emitter
+        ParticleEmitter sparks = ParticleEmitters.newExplosionEmitter(100);
+        sparks.setStartColor(Color.WHITE);
+        sparks.setColor(Color.YELLOW);
+        sparks.setEndColor(Color.DARKGRAY);
+        sparks.setAccelerationFunction(() -> new Point2D(0, 0));
+        if (source != null) {
+            sparks.setSourceImage(source);
+            sparks.setSize(5,5);
+            sparks.setAccelerationFunction(() -> new Point2D(0, 0));
+        }
+        //  Particle Component
+        ParticleComponent component = new ParticleComponent(sparks);
+        component.setOnFinished(result::removeFromWorld);
+        result.addComponent(component);
+        result.setPosition(x - (double) FXGL.getSettings().getWidth()/2 + 100, y - (double) FXGL.getSettings().getHeight()/2);
+        return result;
+    }
+
     private static double flipper_height = 20;
     private static double flipper_width = 150;
-    private static float flipper_restitution = 1.0f;
+    private static float flipper_restitution = 0.9f;
     private static float flipper_density = 0.1f;
     private static float flipper_friction = 0f;
 

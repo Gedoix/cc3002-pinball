@@ -2,8 +2,8 @@ package gui.FXGLentities.states.counter_states;
 
 import com.almasb.fxgl.entity.Entity;
 import controller.Game;
-import gui.FXGLentities.states.StateWithGameAndOwner;
 import gui.FXGLentities.PinballEntityFactory;
+import gui.FXGLentities.states.StateWithGameAndOwner;
 
 public class ScoreCounterUpdatingState extends StateWithGameAndOwner {
 
