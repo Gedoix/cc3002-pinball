@@ -25,6 +25,7 @@ import gui.FXGLentities.states.flipper_states.LeftFlipperInactiveState;
 import gui.FXGLentities.states.flipper_states.RightFlipperInactiveState;
 import gui.PinballGameApplication.Types;
 import javafx.geometry.Point2D;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -36,8 +37,24 @@ import logic.gameelements.bumper.PopBumper;
 import logic.gameelements.target.DropTarget;
 import logic.gameelements.target.SpotTarget;
 
+/**
+ * Class for generating {@link Entity} type objects that can be added to
+ * the {@link com.almasb.fxgl.entity.GameWorld} inside of {@link gui.PinballGameApplication}.
+ *
+ * @author Diego Ortego Prieto
+ *
+ * @see gui.PinballGameApplication
+ *
+ * @see Entity
+ * @see EntityFactory
+ */
 public class PinballEntityFactory implements EntityFactory {
 
+    /**
+     * Creates an entity with nothing but a plain black background color, sized as the window rectangle.
+     *
+     * @return  Black background strapped to an entity.
+     */
     public static Entity newBackground() {
         double w = (double) FXGL.getSettings().getWidth();
         double h = (double) FXGL.getSettings().getHeight();
@@ -48,18 +65,42 @@ public class PinballEntityFactory implements EntityFactory {
                 .build();
     }
 
+    /**
+     * Creates an entity with a green background representing the board,
+     * and the needed collide walls, excepting the floor.
+     *
+     * @return  Green rectangular background with black collide walls.
+     */
     public static Entity newTableWall() {
         double w = (FXGL.getSettings().getWidth() * 0.5);
         double h = (double) FXGL.getSettings().getHeight();
-        double thickness = 100;
+        double x = (FXGL.getSettings().getWidth() * 0.25);
+        double y = 0;
+        double wall_thickness = 100;
+        //  Shapes
+        Polygon polygon = new Polygon(0, wall_thickness/2, wall_thickness/2, 0, w-wall_thickness/2, 0, w, wall_thickness/2, w, h, 0, h);
+        polygon.setFill(Color.GREEN);
+        //  Building
         return Entities.builder()
-                .at((FXGL.getSettings().getWidth() * 0.25), 0)
-                .viewFromNode(new Rectangle(400, 600, Color.GREEN))
-                .renderLayer(RenderLayer.BACKGROUND)
                 .type(Types.WALL)
-                .bbox(new HitBox("LEFT", new Point2D(-thickness, 0.0D), BoundingShape.box(thickness, h)))
-                .bbox(new HitBox("RIGHT", new Point2D(w, 0.0D), BoundingShape.box(thickness, h)))
-                .bbox(new HitBox("TOP", new Point2D(0.0D, -thickness), BoundingShape.box(w, thickness)))
+                .bbox(new HitBox("LEFT",
+                        new Point2D(-wall_thickness, 0.0D),
+                        BoundingShape.box(wall_thickness, h)))
+                .bbox(new HitBox("RIGHT",
+                        new Point2D(w, 0.0D),
+                        BoundingShape.box(wall_thickness, h)))
+                .bbox(new HitBox("TOP",
+                        new Point2D(0.0D, -wall_thickness),
+                        BoundingShape.box(w, wall_thickness)))
+                .bbox(new HitBox("TOP LEFT",
+                        new Point2D(0.0D, 0.0D),
+                        BoundingShape.polygon(new Point2D(0.0D, 0.0D), new Point2D(0.0D, wall_thickness/2), new Point2D(wall_thickness/2, 0.0D))))
+                .bbox(new HitBox("TOP RIGHT",
+                        new Point2D(w, 0.0D),
+                        BoundingShape.polygon(new Point2D(-wall_thickness/2, 0.0D), new Point2D(0.0D, wall_thickness/2), new Point2D(0.0D, 0.0D))))
+                .at(x, y)
+                .viewFromNode(polygon)
+                .renderLayer(RenderLayer.BACKGROUND)
                 .with(new PhysicsComponent(), new CollidableComponent(true))
                 .build();
     }
@@ -228,11 +269,11 @@ public class PinballEntityFactory implements EntityFactory {
 
     }
 
-    public static Entity newSparksParticleMaker(double x, double y) {
-        return newSparksParticleMaker(x, y, null);
+    public static Entity newDefaultExplosionParticleMaker(double x, double y) {
+        return newTexturedExplosionParticleMaker(x, y, null);
     }
 
-    public static Entity newSparksParticleMaker(double x, double y, Image source) {
+    public static Entity newTexturedExplosionParticleMaker(double x, double y, Image source) {
         //  Entity
         Entity result = Entities.builder()
                 .type(Types.PARTICLE_EMITTER)
