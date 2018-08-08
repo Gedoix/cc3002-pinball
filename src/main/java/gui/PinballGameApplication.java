@@ -397,7 +397,9 @@ public class PinballGameApplication extends GameApplication {
      */
     private EventHandler<HitEvent> BumperHit = event -> {
         Bumper bumper = (Bumper) event.getHitEntity().getComponent(HittableComponent.class).getHittable();
-        getMasterTimer().runOnceAfter(bumper::downgrade, Duration.seconds(10));
+        if (bumper.isUpgraded()) {
+            getMasterTimer().runOnceAfter(bumper::downgrade, Duration.seconds(10));
+        }
     };
 
     /**

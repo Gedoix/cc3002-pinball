@@ -5,9 +5,14 @@ and rules for a functioning virtual pinball game in java.
 
 The project implements the following specifications:
 
+### Structure
+
+* The main executable class is `Main`, which launches the app when executed.
+
 * The game code inside the `logic` package describes all game interacting elements so far.
 
-* In `logic.bonus` the bonus events are implemented, which are special events the game triggers under certain conditions.
+* In `logic.bonus` the bonus events are implemented, which are special events the game triggers under certain 
+conditions.
 These bonus objects must extend the `AbstractBonus` abstract class, and implement a `bonusBehaviour` method, detailing 
 the bonus's effects, this method will later be called using the template design pattern.
 
@@ -43,7 +48,50 @@ This object acts as the game's controller and describes all interactions of it's
 
 * In `facade` the class `HomeworkTwoFacade` can be found, which implements the facade design pattern, serving as a 
 demonstrator of the game's workings.
-This class should be using when asserting it's correct implementations.
+This class should be used when asserting it's correct implementations.
+
+* The game code inside the `gui` package describes all game view classes and methods.
+
+* In `gui` the class `PinballGameApplication` can be found. This class sets up the game's view and manages 
+[FXGL](https://github.com/AlmasB/FXGL/wiki) entities and their interactions.
+
+* Inside of `gui.FXGLentities` is where the class `PinballEntityFactory`, it has the job of storing methods that create 
+entities for the game.
+
+* In `gui.FXGLentities.components`, `gui.FXGLentities.events` and `gui.FXGLentities.states` the classes governing the 
+permanent behaviour of entities, the game's events, and the classes governing transitory behaviour of entities can be 
+found, respectively.
+
+* The game's view uses, in `PinballGameApplication`, `PinballEntityFactory` to generate entities for the screen, 
+classes in `gui.FXGLentities.components` to give them special properties, `gui.FXGLentities.states` to add virtual 
+state machine functionality to them, and `gui.FXGLentities.events` to communicate important context information between 
+distant parts of the app.
+
+The only necessary variables for generating the figures on screen are the position and primitives generating an object, 
+and so [FXGL](https://github.com/AlmasB/FXGL/wiki) takes care of managing the cycle.
+
+### Features
+
+The Pinball game implements the following interactions:
+
+* Inside the running app the `N` key restarts the game, positioning hittable elements for the ball randomly in the 
+game's board
+
+* The `SPACE` key throws a new ball into the board, as long as there was not one inside beforehand.
+
+* The `A` and `D` keys activate the left and right flippers respectively.
+
+As for specific features "outside of the core game":
+
+* Whenever a bumper upgrades it resets after 10 seconds, a dropped spot target resets after 20 seconds and a dropped 
+drop target resets after 120 seconds.
+
+* Manual testing is enabled by default, the ball will show a highlighted colour whenever the mouse is in a position that
+could "click it", clicking then makes the ball a fully drag and drop object on the board.
+
+* Both flippers activate from the use of different keys, as mentioned beforehand.
+
+* Whenever a hittable gets hit in the board, an explotion of stars is produced.
 
 ## Getting Started
 
@@ -92,11 +140,19 @@ Tests Passed: 54 of 54 tests
 
 Or a similar message should be displayed on your IDE, meaning the project is configured accordingly.
 
+## Running the App
+
+After all has been checked, just find and run the `Main.main()` method by right clicking on it and selecting `run`, and
+so the game can be played.
+
+A window with the interactable app should open.
+
 ## Built With
 
 * [JetBrain's IntelliJ Idea](https://www.jetbrains.com/idea/) - The IDE used
 * [Maven](https://maven.apache.org/) - Dependency Management
 * [ShareLatex](https://www.sharelatex.com/project) - PDF creation
+* [FXGL](https://github.com/AlmasB/FXGL/wiki) - Game making framework used for view and it's interactions
 
 ## Versioning
 
@@ -107,7 +163,8 @@ For the versions available, see the [tags on this repository](https://github.com
 
 * **Diego Ortego Prieto** - *Implementation and testing* - [Gedoix](https://github.com/Gedoix)
 * **Juan-Pablo Silva** - *Initial project structure template* - [juanpablos](https://github.com/juanpablos)
-* **Bensound.com** - *Background song* - [Bensound](https://www.bensound.com)
+* **Almas Baimagambetov** - *FXGL Framework* - [AlmasB](https://github.com/AlmasB)
+* **Bensound.com** - *Background jazz song* - [Bensound](https://www.bensound.com)
 
 See also the list of [contributors](https://github.com/Gedoix/cc3002-pinball//contributors) 
 who participated in this project.
