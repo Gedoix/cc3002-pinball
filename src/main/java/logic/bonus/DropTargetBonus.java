@@ -37,8 +37,9 @@ public class DropTargetBonus extends AbstractBonus {
     /**
      * {@inheritDoc}
      *
-     * Adds an extra 1000000 (1 million) points to the score
-     * and upgrades all {@link logic.gameelements.bumper.Bumper} type objects in the {@link Game} object.
+     * Adds an extra 1000000 (1 million) points to the score,
+     * upgrades all {@link logic.gameelements.bumper.Bumper} type objects
+     * and resets all {@link logic.gameelements.target.DropTarget} type objects in the {@link Game}.
      *
      * @param game The game controller object.
      */
@@ -46,7 +47,6 @@ public class DropTargetBonus extends AbstractBonus {
     protected void bonusBehaviour(Game game) {
         game.addPoints(trigger_points);
         game.upgradeAllBumpers();
-        //TODO: add reset documentation
         game.getTable().resetDropTargets();
     }
 

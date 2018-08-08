@@ -220,8 +220,8 @@ public class PinballGameApplication extends GameApplication {
         entities.add(PinballEntityFactory.newBackground());
         entities.add(PinballEntityFactory.newTableWall());
         entities.add(PinballEntityFactory.newBottomWall());
-        //entities.add(PinballEntityFactory.newTopLeftWall());
-        //entities.add(PinballEntityFactory.newTopRightWall());
+        entities.add(PinballEntityFactory.newTopLeftWall());
+        entities.add(PinballEntityFactory.newTopRightWall());
         entities.add(PinballEntityFactory.newScoreCounter(pinball));
         entities.add(PinballEntityFactory.newBallCounter(pinball));
 
@@ -348,7 +348,7 @@ public class PinballGameApplication extends GameApplication {
 
         @Override
         protected void onActionBegin() {
-            getEventBus().fireEvent(new NewGameEvent(NewGameEvent.DEFAULT));
+            getEventBus().fireEvent(new NewGameEvent());
         }
 
     };
@@ -509,10 +509,10 @@ public class PinballGameApplication extends GameApplication {
             Body body = ball.getComponent(PhysicsComponent.class).getBody();
             ball.removeComponent(PhysicsComponent.class);
 
-            //  Ensures the proper deletion of the ball, avoiding a strange nullPointerException bug
-            getMasterTimer().runOnceAfter(() -> getPhysicsWorld().getJBox2DWorld().destroyBody(body), Duration.seconds(1));
-
             getGameWorld().removeEntity(ball);
+
+            //  Ensures the proper deletion of the ball, avoiding a strange nullPointerException bug
+            getMasterTimer().runOnceAfter(() -> getPhysicsWorld().getJBox2DWorld().destroyBody(body), Duration.seconds(0.1));
 
         }
 
