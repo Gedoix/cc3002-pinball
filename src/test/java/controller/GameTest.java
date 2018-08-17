@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
@@ -63,9 +64,7 @@ public class GameTest {
     @Test
     public void isGameOver() {
         assertFalse(game.isGameOver());
-        for(int i = 0; i < game.getBallCounter(); i++) {
-            game.removeBall();
-        }
+        IntStream.range(0, game.getBallCounter()).forEach(i -> game.removeBall());
         assertTrue(game.isGameOver());
     }
 

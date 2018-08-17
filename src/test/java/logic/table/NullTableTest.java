@@ -16,7 +16,7 @@ public class NullTableTest {
 
     @Test
     public void nullTable() {
-        assertNull(table.getTableName());
+        assertEquals("", table.getTableName());
         assertFalse(table.isPlayableTable());
         assertEquals(0, table.getBumpers().size());
         assertEquals(0, table.getTargets().size());

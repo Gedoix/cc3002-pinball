@@ -86,7 +86,7 @@ public class HomeworkTwoFacadeTest {
 
     @Test
     public void getAvailableBalls() {
-        assertEquals(1, facade_1.getAvailableBalls());
+        assertEquals(3, facade_1.getAvailableBalls());
     }
 
     @Test
@@ -96,7 +96,7 @@ public class HomeworkTwoFacadeTest {
 
     @Test
     public void dropBall() {
-        assertEquals(0, facade_1.dropBall());
+        assertEquals(2, facade_1.dropBall());
     }
 
     @Test

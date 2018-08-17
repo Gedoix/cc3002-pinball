@@ -24,7 +24,7 @@ public class AbstractTableTest {
     @Test
     public void getTableName() {
         assertEquals("table 1", table_1.getTableName());
-        assertNull(table_2.getTableName());
+        assertEquals("", table_2.getTableName());
     }
 
     @Test

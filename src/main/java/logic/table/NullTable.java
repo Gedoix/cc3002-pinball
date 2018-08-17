@@ -17,7 +17,7 @@ public class NullTable extends AbstractTable {
      * Constructor method for the class.
      */
     public NullTable() {
-        super(null);
+        super("");
     }
 
 }

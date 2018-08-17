@@ -87,7 +87,7 @@ public class Game {
      */
     private Game(boolean testing) {
         this.score = 0;
-        this.ball_counter = 1;
+        this.ball_counter = 3;
 
         this.extra_ball_bonus = new ExtraBallBonus();
         this.jack_pot_bonus = new JackPotBonus();
