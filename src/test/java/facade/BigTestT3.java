@@ -1,4 +1,5 @@
-import facade.HomeworkTwoFacade;
+package facade;
+
 import logic.gameelements.Hittable;
 import logic.gameelements.bumper.Bumper;
 import logic.gameelements.bumper.KickerBumper;
@@ -20,17 +21,8 @@ public class BigTestT3 {
     private HomeworkTwoFacade hw2;
     private final int numberOfInitialBalls = 3;
 
-    private final int popBumperBaseScore = 100;
-    private final int popBumperUpgradeScore = 300;
-
-    private final int kickerBumperBaseScore = 500;
-    private final int kickerBumperUpgradeScore = 1000;
-
     private final int spotTargetScore = 0;
     private final int dropTargetScore = 100;
-
-    private final int dropTargetAllDropBonusScore = 1_000_000;
-    private final int jackPotBonusScore = 100_000;
 
     @Before
     public void setUp() {
@@ -232,8 +224,10 @@ public class BigTestT3 {
         assertEquals(expectedScore, hw2.getCurrentScore());
 
         // hit all
-        bumpers.forEach(Hittable::hit);
+        bumpers.forEach((Hittable) -> hw2.getGame().hit(Hittable));
         // count expected score
+        int popBumperBaseScore = 100;
+        int kickerBumperBaseScore = 500;
         int baseScore = popBumperList.size() * popBumperBaseScore + kickerBumperList.size() * kickerBumperBaseScore;
         expectedScore += baseScore;
         assertEquals(expectedScore, hw2.getCurrentScore());
@@ -246,8 +240,9 @@ public class BigTestT3 {
                 .allMatch(bumper -> bumper.remainingHitsToUpgrade() == 4));
 
         // hit everything 2 times
-        repeat(2, () -> bumpers.forEach(Hittable::hit));
+        repeat(2, () -> bumpers.forEach((Hittable) -> hw2.getGame().hit(Hittable)));
         // pop upgraded
+        int popBumperUpgradeScore = 300;
         expectedScore += (baseScore + popBumperList.size() * popBumperUpgradeScore + kickerBumperList.size() * kickerBumperBaseScore);
         assertEquals(expectedScore, hw2.getCurrentScore());
         // check that pop is upgraded
@@ -272,7 +267,8 @@ public class BigTestT3 {
                 .allMatch(bumper -> bumper.remainingHitsToUpgrade() == 2));
 
         // 2 more times
-        repeat(2, () -> bumpers.forEach(Hittable::hit));
+        repeat(2, () -> bumpers.forEach((Hittable) -> hw2.getGame().hit(Hittable)));
+        int kickerBumperUpgradeScore = 1000;
         expectedScore += popBumperList.size() * popBumperUpgradeScore * 2 +
                 kickerBumperList.size() * kickerBumperUpgradeScore + kickerBumperList.size() * kickerBumperBaseScore;
         assertEquals(expectedScore, hw2.getCurrentScore());
@@ -292,7 +288,7 @@ public class BigTestT3 {
                 .allMatch(bumper -> bumper.remainingHitsToUpgrade() == 0));
 
         // hit 6th time
-        bumpers.forEach(Hittable::hit);
+        bumpers.forEach((Hittable) -> hw2.getGame().hit(Hittable));
         expectedScore += popBumperList.size() * popBumperUpgradeScore + kickerBumperList.size() * kickerBumperUpgradeScore;
         assertEquals(expectedScore, hw2.getCurrentScore());
 
@@ -304,7 +300,7 @@ public class BigTestT3 {
                 .reduce(
                         false,
                         (a, b) -> a || b));
-        bumpers.forEach(Hittable::hit);
+        bumpers.forEach((Hittable) -> hw2.getGame().hit(Hittable));
         expectedScore += baseScore;
         assertEquals(expectedScore, hw2.getCurrentScore());
 
@@ -317,7 +313,7 @@ public class BigTestT3 {
                 .reduce(
                         true,
                         (a, b) -> a && b));
-        bumpers.forEach(Hittable::hit);
+        bumpers.forEach((Hittable) -> hw2.getGame().hit(Hittable));
         expectedScore += popBumperList.size() * popBumperUpgradeScore + kickerBumperList.size() * kickerBumperUpgradeScore;
         assertEquals(expectedScore, hw2.getCurrentScore());
     }
@@ -436,7 +432,7 @@ public class BigTestT3 {
                 .filter(target -> target instanceof DropTarget)
                 .collect(Collectors.toList());
 
-        dropTargetList.get(0).hit();
+        hw2.getGame().hit(dropTargetList.get(0));
         assertFalse(dropTargetList
                 .stream()
                 .map(Target::isActive)
@@ -444,7 +440,7 @@ public class BigTestT3 {
                         true,
                         (a, b) -> a && b));
 
-        dropTargetList.forEach(Hittable::hit);
+        dropTargetList.forEach((Hittable) -> hw2.getGame().hit(Hittable));
         // all drop have been hit, they should be false
         assertTrue(dropTargetList
                 .stream()
@@ -452,12 +448,13 @@ public class BigTestT3 {
                 .reduce(
                         true,
                         (a, b) -> a && b));
+        int dropTargetAllDropBonusScore = 1_000_000;
         int expectedScore = dropTargetAllDropBonusScore + dropTargetScore * dropTargetList.size();
         assertEquals(expectedScore, hw2.getCurrentScore());
 
         // times triggered
         assertEquals(1, hw2.getDropTargetBonus().timesTriggered());
-        repeat(10, () -> dropTargetList.forEach(Hittable::hit));
+        repeat(10, () -> dropTargetList.forEach((Hittable) -> hw2.getGame().hit(Hittable)));
         assertEquals(11, hw2.getDropTargetBonus().timesTriggered());
     }
 
@@ -472,7 +469,7 @@ public class BigTestT3 {
 
         int expectedScore = 0;
         assertEquals(expectedScore, hw2.getCurrentScore());
-        spotTargetList.forEach(Hittable::hit);
+        spotTargetList.forEach((Hittable) -> hw2.getGame().hit(Hittable));
         // check all inactive
         assertFalse(spotTargetList
                 .stream()
@@ -480,6 +477,7 @@ public class BigTestT3 {
                 .reduce(
                         false,
                         (a, b) -> a || b));
+        int jackPotBonusScore = 100_000;
         expectedScore += spotTargetScore * spotTargetList.size() + jackPotBonusScore * spotTargetList.size();
         assertEquals(expectedScore, hw2.getCurrentScore());
 
@@ -500,7 +498,7 @@ public class BigTestT3 {
         assertEquals(numberOfInitialBalls, hw2.getAvailableBalls());
 
         repeat(10, () -> {
-            repeat(6, () -> bumpers.forEach(Hittable::hit));
+            repeat(6, () -> bumpers.forEach((Hittable) -> hw2.getGame().hit(Hittable)));
             bumpers.forEach(Bumper::downgrade);
         });
 
@@ -508,7 +506,7 @@ public class BigTestT3 {
         int moreBalls = hw2.getAvailableBalls();
         assertTrue(numberOfInitialBalls < moreBalls);
 
-        repeat(10, () -> dropTargetList.forEach(Hittable::hit));
+        repeat(10, () -> dropTargetList.forEach((Hittable) -> hw2.getGame().hit(Hittable)));
         assertTrue(moreBalls < hw2.getAvailableBalls());
 
     }

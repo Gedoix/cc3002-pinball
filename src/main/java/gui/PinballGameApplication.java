@@ -183,16 +183,6 @@ public class PinballGameApplication extends GameApplication {
         getPhysicsWorld().addCollisionHandler(BottomWallCollisionHandler);
     }
 
-    /**
-     * Makes sure {@link Game} triggers {@link DropTarget} at the appropriate time.
-     *
-     * @param tpf   Unused parameter inherited from superclass.
-     */
-    @Override
-    protected void onUpdate(double tpf) {
-        pinball.update();
-    }
-
     //  Private complex behaviours
 
     /**

@@ -328,12 +328,11 @@ public class Game {
     //  Update methods for runtime behavior, currently unused, but will be implemented along with the game view
 
     /**
-     * PinballGameApplication update method for the game, to be used once every frame.
+     * PinballGameApplication checkDropTargets method for the game, to be used once every hit.
      *
-     * Should take into account positioning of the ball and all objects within the table
-     * and call the {@link #hit(Hittable)} method accordingly.
+     *  Can trigger DropTargetBonus.
      */
-    public void update() {
+    public void checkDropTargets() {
         if (current_table.getNumberOfDropTargets() != 0 &&
                 current_table.getNumberOfDropTargets() - current_table.getCurrentlyDroppedDropTargets() == 0) {
             this.triggerDropTargetBonus();
@@ -342,7 +341,7 @@ public class Game {
 
     /**
      * Uses double dispatch and a visitor pattern class to hit a hittable game element, and trigger any events
-     * that follow, excepting the {@link DropTargetBonus}, which only gets triggered by the {@link #update()} method.
+     * that follow, excepting the {@link DropTargetBonus}, which only gets triggered by the {@link #checkDropTargets()} method.
      *
      * @param hittable  The hittable game element to be hit.
      */
@@ -359,6 +358,8 @@ public class Game {
         int result = visitor.getResult();
 
         this.addPoints(result);
+
+        this.checkDropTargets();
     }
 
 }

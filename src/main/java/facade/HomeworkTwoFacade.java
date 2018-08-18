@@ -22,6 +22,15 @@ public class HomeworkTwoFacade {
     private Game game = new Game();
 
     /**
+     * Gets the instance of {@link Game} being demonstrated.
+     *
+     * @return the current game instance.
+     */
+    public Game getGame() {
+        return game;
+    }
+
+    /**
      * Gets whether the current table is playable or not.
      *
      * @return true if the current table is playable, false otherwise
